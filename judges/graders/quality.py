@@ -16,7 +16,19 @@ class QueryQualityJudge(BaseJudge):
         format: Optional["pydantic.BaseModel"] = None,
     ) -> Verdict:
         """
-        Judge the input and return a verdict.
+        Judge the input and return a verdict. 
+        
+        Adapted from the paper:
+        Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing
+
+        @article{xu2024magpie,
+            title={Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing},
+            author={Zhangchen Xu and Fengqing Jiang and Luyao Niu and Yuntian Deng and Radha Poovendran and Yejin Choi and Bill Yuchen Lin},
+            journal={ArXiv},
+            year={2024},
+            volume={abs/2406.08464},
+            url={https://api.semanticscholar.org/CorpusID:270391432}
+        }
         """
         system_prompt = None
         user_prompt = dedent(f"""
