@@ -9,6 +9,9 @@ authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
 ]
 description = "A small library to use and create LLM-as-a-Judge evaluators."
+dependencies = [
+    "openai == 1.45.1",
+]
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["ai", "large language models", "llm-judge", "evaluation", "evals"]
