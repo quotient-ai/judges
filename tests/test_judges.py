@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 import openai
@@ -7,6 +8,7 @@ from judges.classifiers.correctness import CorrectnessJudge
 from judges.graders.quality import QueryQualityJudge
 from judges.graders.relevancy import RelevancyJudge
 
+os.environ['OPENAI_API_KEY'] = 'test-key'
 
 def mock_verdict(verdict: Verdict):
     def decorator(func):
