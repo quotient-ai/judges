@@ -1,5 +1,8 @@
+from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
+
+from openai import OpenAI
 
 if TYPE_CHECKING:
     import pydantic
@@ -24,6 +27,7 @@ class BaseJudge:
 
     The reasoning is a string that explains why the score is True or False.
     """
+    citation: str = None
 
     def __init__(
         self,
@@ -35,14 +39,16 @@ class BaseJudge:
         self.model = model
         self._client = self._configure_client()
 
+    def __init_subclass__(cls, **kwargs):
+        for required in ("citation",):
+            if not getattr(cls, required):
+                raise TypeError(f"can't instantiate abstract class {cls.__name__} without {required} attribute defined")
+        return super().__init_subclass__(**kwargs)
+
     def _configure_client(self):
         if self.model == "gpt-4o-mini":
-            from openai import OpenAI
-
             client = OpenAI()
         elif self.model == "gpt-4o":
-            from openai import OpenAI
-
             client = OpenAI()
         else:
             raise ValueError(f"Invalid model: {self.model}")

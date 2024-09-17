@@ -6,6 +6,16 @@ from judges.base import BaseJudge, Verdict
 
 
 class RelevancyJudge(BaseJudge):
+    citation = dedent(r"""
+        @misc{vespa2024llmjudge,
+        author       = {Jo Kristian Bergum},
+        title        = {Improving Retrieval with LLM as a Judge},
+        howpublished = {\url{https://blog.vespa.ai/improving-retrieval-with-llm-as-a-judge/}},
+        note         = {Accessed: 2024-09-17},
+        year         = {2024}
+        }
+    """)
+
     def judge(
         self,
         input: str,

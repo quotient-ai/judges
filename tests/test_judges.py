@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
-from judges.base import Verdict
+import openai
 
+from judges.base import BaseJudge, Verdict
 from judges.classifiers.correctness import CorrectnessJudge
 from judges.graders.quality import QueryQualityJudge
 from judges.graders.relevancy import RelevancyJudge
@@ -10,12 +11,31 @@ from judges.graders.relevancy import RelevancyJudge
 def mock_verdict(verdict: Verdict):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            with patch("judges.base.openai.OpenAI.chat.completions.create") as mock:
+            openai.api_type = 'openai'
+            with patch("openai.chat.completions.create") as mock:
                 mock.return_value = verdict
                  # Pass the mock to the test
                 return func(mock, *args, **kwargs)
         return wrapper
     return decorator
+
+
+def test_base_judge_no_citation():
+
+
+    try:
+        class TestJudge(BaseJudge):
+            pass
+    except TypeError as e:
+        assert str(e) == "can't instantiate abstract class TestJudge without citation attribute defined"
+
+def test_base_judge():
+    class TestJudge(BaseJudge):
+        citation = "Test"
+
+    judge = TestJudge("gpt-4o-mini")
+    assert judge.model == "gpt-4o-mini"
+    assert judge._client is not None
 
 
 @mock_verdict(
@@ -25,7 +45,7 @@ def mock_verdict(verdict: Verdict):
     )
 )
 def test_quality_judge(mockclient):
-    judge = QueryQualityJudge()
+    judge = QueryQualityJudge(model="gpt-4o-mini")
     verdict = judge.judge(input="What is the capital of France?")
 
     assert verdict.score == "average"
@@ -43,7 +63,7 @@ def test_quality_judge(mockclient):
     )
 )
 def test_correctness_judge(mockclient):
-    judge = CorrectnessJudge()
+    judge = CorrectnessJudge(model="gpt-4o-mini")
     verdict = judge.judge(
         input="What is the capital of France?",
         output="Paris",
@@ -63,7 +83,7 @@ def test_correctness_judge(mockclient):
     )
 )
 def test_relevancy_judge(mockclient):
-    judge = RelevancyJudge()
+    judge = RelevancyJudge(model="gpt-4o-mini")
     verdict = judge.judge(
         input="What is the capital of France?",
         output="Paris is the capital of France.",

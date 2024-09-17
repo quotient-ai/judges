@@ -8,6 +8,16 @@ class CorrectnessJudge(BaseJudge):
     """
     Judge that determines if the output is correct.
     """
+    citation = dedent(r"""
+        @article{FILLMEIN,
+            title={FILLMEIN},
+            author={FILLMEIN},
+            journal={FILLMEIN},
+            year={FILLMEIN},
+            volume={FILLMEIN},
+            url={FILLMEIN}
+        }
+    """)
     def judge(
         self,
         input: str,
