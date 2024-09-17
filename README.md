@@ -1,2 +1,2 @@
 # judges
-A library to easily use LLM-as-a-Judge
+A small library to use and create LLM-as-a-Judge evaluators.

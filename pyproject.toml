@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "judges"
+version = "0.0.1"
+authors = [
+    {name = "Freddie Vargus", email = "freddie@quotientai.co"},
+]
+description = "A small library to use and create LLM-as-a-Judge evaluators."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["ai", "large language models", "llm-judge", "evaluation", "evals"]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
