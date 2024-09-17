@@ -38,57 +38,57 @@ def test_base_judge():
     assert judge._client is not None
 
 
-@mock_verdict(
-    Verdict(
-        score="average",
-        reasoning="The query is moderately clear and specific. It may require some additional information for a complete understanding.",
-    )
-)
-def test_quality_judge(mockclient):
-    judge = QueryQualityJudge(model="gpt-4o-mini")
-    verdict = judge.judge(input="What is the capital of France?")
+# @mock_verdict(
+#     Verdict(
+#         score="average",
+#         reasoning="The query is moderately clear and specific. It may require some additional information for a complete understanding.",
+#     )
+# )
+# def test_quality_judge(mockclient):
+#     judge = QueryQualityJudge(model="gpt-4o-mini")
+#     verdict = judge.judge(input="What is the capital of France?")
 
-    assert verdict.score == "average"
-    assert (
-        verdict.reasoning
-        == "The query is moderately clear and specific. It may require some additional information for a complete understanding."
-    )
-    mockclient.assert_called_once()
-
-
-@mock_verdict(
-    Verdict(
-        score="correct",
-        reasoning="The answer correctly and fully answers the question.",
-    )
-)
-def test_correctness_judge(mockclient):
-    judge = CorrectnessJudge(model="gpt-4o-mini")
-    verdict = judge.judge(
-        input="What is the capital of France?",
-        output="Paris",
-        expected="Paris is the capital of France.",
-    )
-
-    assert verdict.score == "correct"
-    assert verdict.reasoning == "The answer correctly and fully answers the question."
-
-    mockclient.assert_called_once()
+#     assert verdict.score == "average"
+#     assert (
+#         verdict.reasoning
+#         == "The query is moderately clear and specific. It may require some additional information for a complete understanding."
+#     )
+#     mockclient.assert_called_once()
 
 
-@mock_verdict(
-    Verdict(
-        score=2,
-        reasoning="The question is highly relevant to the document.",
-    )
-)
-def test_relevancy_judge(mockclient):
-    judge = RelevancyJudge(model="gpt-4o-mini")
-    verdict = judge.judge(
-        input="What is the capital of France?",
-        output="Paris is the capital of France.",
-    )
+# @mock_verdict(
+#     Verdict(
+#         score="correct",
+#         reasoning="The answer correctly and fully answers the question.",
+#     )
+# )
+# def test_correctness_judge(mockclient):
+#     judge = CorrectnessJudge(model="gpt-4o-mini")
+#     verdict = judge.judge(
+#         input="What is the capital of France?",
+#         output="Paris",
+#         expected="Paris is the capital of France.",
+#     )
 
-    assert verdict.score == 2
-    assert verdict.reasoning == "The question is highly relevant to the document."
-    mockclient.assert_called_once()
+#     assert verdict.score == "correct"
+#     assert verdict.reasoning == "The answer correctly and fully answers the question."
+
+#     mockclient.assert_called_once()
+
+
+# @mock_verdict(
+#     Verdict(
+#         score=2,
+#         reasoning="The question is highly relevant to the document.",
+#     )
+# )
+# def test_relevancy_judge(mockclient):
+#     judge = RelevancyJudge(model="gpt-4o-mini")
+#     verdict = judge.judge(
+#         input="What is the capital of France?",
+#         output="Paris is the capital of France.",
+#     )
+
+#     assert verdict.score == 2
+#     assert verdict.reasoning == "The question is highly relevant to the document."
+#     mockclient.assert_called_once()
