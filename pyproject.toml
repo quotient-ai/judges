@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
 ]
-description = "A small library to use and create LLM-as-a-Judge evaluators."
+description = "A small library for off-the-shelf LLMs as judges."
 dependencies = [
     "openai == 1.45.1",
 ]
