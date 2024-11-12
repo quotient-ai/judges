@@ -1,8 +1,7 @@
-from functools import partial
 from textwrap import dedent
 from typing import Optional
 
-from judges.base import BaseJudge, Verdict
+from judges.base import BaseJudge, Judgment
 
 class QueryQuality(BaseJudge):
     """
@@ -25,7 +24,7 @@ class QueryQuality(BaseJudge):
         input: str,
         output: Optional[str] = None,
         expected: Optional[str] = None,
-    ) -> Verdict:
+    ) -> Judgment:
         """
         Judge the input and return a verdict. 
         """
@@ -57,4 +56,4 @@ class QueryQuality(BaseJudge):
         """
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Verdict(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score)
