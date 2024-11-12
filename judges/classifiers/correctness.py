@@ -1,8 +1,6 @@
-from functools import partial
 from textwrap import dedent
-from typing import Optional
 
-from judges.base import BaseJudge, Verdict
+from judges.base import BaseJudge, Judgment
 
 class AnswerCorrectness(BaseJudge):
     """
@@ -17,7 +15,7 @@ class AnswerCorrectness(BaseJudge):
         input: str,
         output: str = None,
         expected: str = None,
-    ) -> Verdict:
+    ) -> Judgment:
         """
         Judge the input and return a verdict.
         """
@@ -44,5 +42,5 @@ class AnswerCorrectness(BaseJudge):
         False means that the question is not correctly or only partially answered by the answer.
         """)
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Verdict(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score)
 

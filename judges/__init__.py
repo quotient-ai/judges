@@ -1,4 +1,3 @@
-from judges.graders.quality import QueryQuality
-from judges.graders.relevancy import DocumentRelevancy
+from judges.base import Jury
 
-__all__ = ["DocumentRelevancy", "QueryQuality"]
+__all__ = ["Jury"]
