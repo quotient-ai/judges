@@ -17,14 +17,17 @@ class Judgment:
     """
     A dataclass that represents a judgment.
     """
+
     score: bool | int
     reasoning: str
+
 
 @dataclass
 class Verdict:
     """
     A dataclass that represents a jury's verdict.
     """
+
     score: bool | int
     judgments: list[Judgment] = None
 
@@ -77,7 +80,9 @@ class BaseJudge:
     def _judge(self, user_prompt: str, system_prompt: Optional[str] = None):
         messages = self._build_messages(user_prompt, system_prompt)
         completion = self._client.chat.completions.create(
-            model=self.model, messages=messages, response_format={"type": "json_object"}
+            model=self.model,
+            messages=messages,
+            response_format={"type": "json_object"},
         )
         data = json.loads(completion.choices[0].message.content)
         reasoning = data["REASONING"]

@@ -1,10 +1,9 @@
 # judges
 
-- [judges](#judges)
-  - [Overview](#overview)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [API](#api)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API](#api)
     - [Send data to an LLM](#send-data-to-an-llm)
     - [Use a `judges` classifier LLM as an evaluator model](#use-a-judges-classifier-llm-as-an-evaluator-model)
     - [Use a `Jury`: more accuracy, less bias, lower cost](#use-a-jury-more-accuracy-less-bias-lower-cost)
