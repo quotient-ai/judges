@@ -3,7 +3,7 @@ from typing import Optional
 
 from judges.base import BaseJudge, Judgment
 
-class QueryQuality(BaseJudge):
+class MagpieQueryQuality(BaseJudge):
     r"""
     A judge that evaluates the quality of a query based on its clarity, specificity, and coherence.
 
@@ -57,3 +57,4 @@ class QueryQuality(BaseJudge):
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
         return Judgment(reasoning=reasoning, score=score)
+
