@@ -104,7 +104,7 @@ class BaseJudge:
 
 @dataclass
 class Jury:
-    """
+    r"""
     A jury is a set of judges that averages or takes the mode of all the scores.
 
     @misc{2404.18796,

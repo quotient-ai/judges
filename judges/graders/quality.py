@@ -4,7 +4,7 @@ from typing import Optional
 from judges.base import BaseJudge, Judgment
 
 class QueryQuality(BaseJudge):
-    """
+    r"""
     A judge that evaluates the quality of a query based on its clarity, specificity, and coherence.
 
     Citation:

@@ -3,7 +3,7 @@ from textwrap import dedent
 from judges.base import BaseJudge, Judgment
 
 class AnswerCorrectness(BaseJudge):
-    """
+    r"""
     A judge that evaluates the correctness of an answer to a question based on a reference.
 
     Citation:
