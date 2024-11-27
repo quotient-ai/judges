@@ -94,6 +94,7 @@ From that day on, Fig had a new friend. Every afternoon, the two of them would m
 input = f'{story}\n\nQuestion:{question}'
 
 # write down what the model is expected to respond with
+# NOTE: not all judges require an expected answer. refer to the implementations
 expected = "I don't know"
 
 # get the model output
