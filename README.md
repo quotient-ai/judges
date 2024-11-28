@@ -67,12 +67,12 @@ The library also provides an interface to combine multiple judges through the `J
 
 ## Usage
 
-1. Set your OpenAI API key
+### Set your OpenAI API key
 To get started, you'll need an OpenAI API key set as an environment variable `OPENAI_API_KEY`
 
+### Send data to an LLM
 Next, if you'd like to use this package, you can follow the `example.py` below:
 
-2. Send data to an LLM
 ```python
 from openai import OpenAI
 
@@ -109,7 +109,7 @@ output = client.chat.completions.create(
 ).choices[0].message.content
 ```
 
-3a. Use a `judges` classifier LLM as an evaluator model
+### Use a `judges` classifier LLM as an evaluator model
 
 ```python
 from judges.classifiers.correctness import PollMultihopCorrectness
@@ -130,7 +130,7 @@ print(judgment.score)
 # True
 ```
 
-3b. Use a `Jury` for averaging and diversification
+### Use a `Jury` for averaging and diversification
 
 A jury of LLMs can enable more diverse results and enable you to combine the judgments of multiple LLMs.
 
