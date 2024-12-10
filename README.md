@@ -67,8 +67,20 @@ The library also provides an interface to combine multiple judges through the `J
 
 ## Usage
 
-### Set your OpenAI API key
-To get started, you'll need an OpenAI API key set as an environment variable `OPENAI_API_KEY`
+### Pick a model
+
+- **OpenAI:** 
+  - By default, `judges` uses the OpenAI client and models due to its widespread use. To get started, you'll need an OpenAI API key set as an environment variable `OPENAI_API_KEY`
+- **LiteLLM:** 
+  - If you would like to use models on other inference providers, `judges` also integrates with `litellm` as an extra dependency. Run `pip install judges[litellm]`, and set the appropriate API keys based on the [LiteLLM Docs](https://docs.litellm.ai/docs/#basic-usage).
+
+To see all models available, run:
+
+```python
+from judges import get_available_models
+
+print(get_available_models())
+```
 
 ### Send data to an LLM
 Next, if you'd like to use this package, you can follow the `example.py` below:
