@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Optional
 
 from openai import OpenAI
 
+from judges._models import get_available_models
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
+
 
 if TYPE_CHECKING:
     import pydantic
@@ -61,15 +63,25 @@ class BaseJudge:
         self._client = self._configure_client()
 
     def _configure_client(self):
-        model_map = {
-            "gpt-4o-mini": OpenAI(),
-            "gpt-4o": OpenAI(),
-            "gpt-4": OpenAI(),
-        }
-        try:
-            return model_map[self.model]
-        except KeyError:
-            raise ValueError(f"unsupported model: {self.model}")
+        available_models = get_available_models()
+        model = next(
+            (model for model in available_models if model["name"] == self.model),
+            None,
+        )
+
+        if model is None:
+            raise ValueError(f"model `{self.model}` not found. Run `get_available_models()` to see all options.")
+
+        if model["client"] == "openai":
+            return OpenAI()
+        else:
+            try:
+                import litellm
+            except ImportError:
+                raise ImportError(
+                    "litellm is not installed. Please install judges[litellm] to use this model."
+                )
+            return litellm
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
         messages = []
@@ -86,11 +98,16 @@ class BaseJudge:
 
     def _judge(self, user_prompt: str, system_prompt: Optional[str] = None):
         messages = self._build_messages(user_prompt, system_prompt)
-        completion = self._client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            response_format={"type": "json_object"},
-        )
+
+        if self._client.__class__.__name__ == "OpenAI":
+            completion = self._client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+        else:
+            completion = self._client.completion(self.model, messages)
+
         data = json.loads(completion.choices[0].message.content)
         reasoning = data["REASONING"]
         score = data["SCORE"]
