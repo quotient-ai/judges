@@ -99,25 +99,26 @@ class BaseJudge:
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
         """
-        Build the message payload for the model evaluation.
+        Build a list of messages to be sent to the model, incorporating optional system-level instructions.
 
         Parameters:
         -----------
-        user_prompt: str
-            The input prompt for the user.
-        system_prompt: Optional[str]
-            The optional system-level prompt.
+        user_prompt : str
+            The main user prompt to be sent to the model.
+        system_prompt : Optional[str], default=None
+            An optional system-level prompt to provide additional context or guidelines.
 
         Returns:
         --------
-        list[dict]:
-            The list of messages to be sent to the model.
+        list
+            A list of dictionaries, each representing a message to be sent to the model.
+            The user prompt includes instructions to respond in JSON format.
         """
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
 
-        # add json format expectation to the user prompt:
+        # Add a flexible JSON format expectation to the user prompt
         user_prompt += (
             'Respond in JSON format. {"REASONING": "[...]", "SCORE": "<your-score>"}'
         )
