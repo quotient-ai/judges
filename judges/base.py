@@ -20,7 +20,7 @@ class Judgment:
 
     score: bool | int | str
     reasoning: str
-    
+
     def __post_init__(self):
         if self.score.lower() in ["yes", "true", 1, "good"]:
             self.score = True
@@ -72,29 +72,85 @@ class BaseJudge:
             raise ValueError(f"unsupported model: {self.model}")
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
+        """
+        Build a list of messages to be sent to the model, incorporating optional system-level instructions.
+
+        Parameters:
+        -----------
+        user_prompt : str
+            The main user prompt to be sent to the model.
+        system_prompt : Optional[str], default=None
+            An optional system-level prompt to provide additional context or guidelines.
+
+        Returns:
+        --------
+        list
+            A list of dictionaries, each representing a message to be sent to the model.
+            The user prompt includes instructions to respond in JSON format.
+
+        Notes:
+        ------
+        - The JSON format expectation is flexible, allowing for any fields to be included in the response.
+        - This ensures compatibility with dynamically structured outputs.
+        """
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
 
-        # add json format expectation to the user prompt:
+        # Add a flexible JSON format expectation to the user prompt
         user_prompt += (
-            'Respond in JSON format. {{"REASONING": "[...]", "SCORE": "<your-score>"}}'
+            " Respond in JSON format with any relevant fields and values."
+            " Ensure the output is valid JSON that can be parsed directly by Python's json module."
         )
 
         messages.append({"role": "user", "content": user_prompt})
         return messages
 
     def _judge(self, user_prompt: str, system_prompt: Optional[str] = None):
+        """
+        Send a prompt to the model and dynamically parse the JSON response.
+
+        Parameters:
+        -----------
+        user_prompt : str
+            The main user prompt to be sent to the model.
+        system_prompt : Optional[str], default=None
+            An optional system-level prompt to provide additional instructions or context.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing all the fields extracted from the model's JSON response.
+
+        Raises:
+        -------
+        ValueError
+            If the response from the model cannot be parsed as valid JSON.
+
+        Notes:
+        ------
+        - The method expects the model's response to be in JSON format.
+        - Dynamically extracts all fields from the response, allowing flexible handling
+          of various output structures without causing key errors.
+        - Designed to handle scenarios where certain fields may be missing in the model's output.
+        """
         messages = self._build_messages(user_prompt, system_prompt)
         completion = self._client.chat.completions.create(
             model=self.model,
             messages=messages,
             response_format={"type": "json_object"},
         )
-        data = json.loads(completion.choices[0].message.content)
-        reasoning = data["REASONING"]
-        score = data["SCORE"]
-        return reasoning, score
+
+        # Dynamically parse the JSON response
+        try:
+            data = json.loads(completion.choices[0].message.content)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse JSON response: {e}")
+
+        # Extract all available fields
+        extracted_data = {key: data.get(key, None) for key in data}
+
+        return extracted_data
 
     @abstractmethod
     def judge(
@@ -124,13 +180,13 @@ class Jury:
     A jury is a set of judges that averages or takes the mode of all the scores.
 
     @misc{verga2024replacingjudgesjuriesevaluating,
-        title={Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models}, 
+        title={Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models},
         author={Pat Verga and Sebastian Hofstatter and Sophia Althammer and Yixuan Su and Aleksandra Piktus and Arkady Arkhangorodsky and Minjie Xu and Naomi White and Patrick Lewis},
         year={2024},
         eprint={2404.18796},
         archivePrefix={arXiv},
         primaryClass={cs.CL},
-        url={https://arxiv.org/abs/2404.18796}, 
+        url={https://arxiv.org/abs/2404.18796},
     }
     """
 
