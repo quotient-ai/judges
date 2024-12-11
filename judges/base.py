@@ -99,26 +99,25 @@ class BaseJudge:
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
         """
-        Build a list of messages to be sent to the model, incorporating optional system-level instructions.
+        Build the message payload for the model evaluation.
 
         Parameters:
         -----------
-        user_prompt : str
-            The main user prompt to be sent to the model.
-        system_prompt : Optional[str], default=None
-            An optional system-level prompt to provide additional context or guidelines.
+        user_prompt: str
+            The input prompt for the user.
+        system_prompt: Optional[str]
+            The optional system-level prompt.
 
         Returns:
         --------
-        list
-            A list of dictionaries, each representing a message to be sent to the model.
-            The user prompt includes instructions to respond in JSON format.
+        list[dict]:
+            The list of messages to be sent to the model.
         """
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
 
-        # Add a flexible JSON format expectation to the user prompt
+        # add json format expectation to the user prompt:
         user_prompt += (
             'Respond in JSON format. {"REASONING": "[...]", "SCORE": "<your-score>"}'
         )
@@ -143,16 +142,11 @@ class BaseJudge:
             The reasoning and score extracted from the model's response.
         """
         messages = self._build_messages(user_prompt, system_prompt)
-
-        if self._client.__class__.__name__ == "OpenAI":
-            completion = self._client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                response_format={"type": "json_object"},
-            )
-        else:
-            completion = self._client.completion(self.model, messages)
-
+        completion = self._client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            response_format={"type": "json_object"},
+        )
         data = json.loads(completion.choices[0].message.content)
         reasoning = data["REASONING"]
         score = data["SCORE"]
