@@ -27,6 +27,11 @@ class HaystackBulletPointCoverageCorrectness(BaseJudge):
     Model(s) used in paper:
     -----------------------
     Claude 3 | Gemini 1.5
+
+    NOTE:
+    -----
+    We remove the authors' initial output standardization requirement i.e., "Rating: [[rating]]" 
+    so we don't need to define a new methood to extract the rating for just this one judge.
     """
 
     def judge(
