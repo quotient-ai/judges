@@ -60,8 +60,7 @@ class MTBenchChatBotResponseQuality(BaseJudge):
             AI assistant to the user question displayed below. Your evaluation should consider factors
             such as the helpfulness, relevance, accuracy, depth, creativity, and level of detail of
             the response. Begin your evaluation by providing a short explanation. Be as objective as
-            possible. After providing your explanation, please rate the response on a scale of 1 to 10
-            by strictly following this format: "[[rating]]", for example: "Rating: [[5]]".
+            possible. After providing your explanation, please rate the response on a scale of 1 to 10.
             [Question]
             {input}
             [The Start of Assistant’s Answer]
