@@ -16,12 +16,22 @@ if TYPE_CHECKING:
 class Judgment:
     """
     A dataclass that represents a judgment.
+
+    Attributes:
+    -----------
+    score: bool | int | str
+        The score assigned by the judge, indicating the evaluation result.
+    reasoning: str
+        The reasoning provided by the judge for the assigned score.
     """
 
     score: bool | int | str
     reasoning: str
 
     def __post_init__(self):
+        """
+        Post-initialization to normalize score values for consistency.
+        """
         if self.score.lower() in ["yes", "true", 1, "good"]:
             self.score = True
         elif self.score.lower() in ["no", "false", 0, "bad"]:
@@ -32,6 +42,13 @@ class Judgment:
 class Verdict:
     """
     A dataclass that represents a jury's verdict.
+
+    Attributes:
+    -----------
+    score: bool | int
+        The aggregated score determined by the jury.
+    judgments: list[Judgment]
+        A list of individual judgments from all judges in the jury.
     """
 
     score: bool | int
@@ -44,10 +61,10 @@ class BaseJudge:
     Base class for all judges. All judges must implement a judge method which
     produces a `Verdict` object that contains a score and reasoning.
 
-    The score is a boolean value, True if judge's criteria is met, False
-    if not.
-
-    The reasoning is a string that explains why the score is True or False.
+    Attributes:
+    -----------
+    model: str
+        The model used by the judge for evaluation.
     """
 
     def __init__(
@@ -56,11 +73,24 @@ class BaseJudge:
     ):
         """
         Initialize the judge with a specific model.
+
+        Parameters:
+        -----------
+        model: str
+            The model identifier to be used for evaluations.
         """
         self.model = model
         self._client = self._configure_client()
 
     def _configure_client(self):
+        """
+        Configure the client based on the selected model.
+
+        Returns:
+        --------
+        OpenAI:
+            The initialized OpenAI client.
+        """
         model_map = {
             "gpt-4o-mini": OpenAI(),
             "gpt-4o": OpenAI(),
@@ -73,34 +103,27 @@ class BaseJudge:
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
         """
-        Build a list of messages to be sent to the model, incorporating optional system-level instructions.
+        Build the message payload for the model evaluation.
 
         Parameters:
         -----------
-        user_prompt : str
-            The main user prompt to be sent to the model.
-        system_prompt : Optional[str], default=None
-            An optional system-level prompt to provide additional context or guidelines.
+        user_prompt: str
+            The input prompt for the user.
+        system_prompt: Optional[str]
+            The optional system-level prompt.
 
         Returns:
         --------
-        list
-            A list of dictionaries, each representing a message to be sent to the model.
-            The user prompt includes instructions to respond in JSON format.
-
-        Notes:
-        ------
-        - The JSON format expectation is flexible, allowing for any fields to be included in the response.
-        - This ensures compatibility with dynamically structured outputs.
+        list[dict]:
+            The list of messages to be sent to the model.
         """
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
 
-        # Add a flexible JSON format expectation to the user prompt
+        # add json format expectation to the user prompt:
         user_prompt += (
-            " Respond in JSON format with any relevant fields and values."
-            " Ensure the output is valid JSON that can be parsed directly by Python's json module."
+            'Respond in JSON format. {"REASONING": "[...]", "SCORE": "<your-score>"}'
         )
 
         messages.append({"role": "user", "content": user_prompt})
@@ -108,31 +131,19 @@ class BaseJudge:
 
     def _judge(self, user_prompt: str, system_prompt: Optional[str] = None):
         """
-        Send a prompt to the model and dynamically parse the JSON response.
+        Perform the judgment process using the configured model.
 
         Parameters:
         -----------
-        user_prompt : str
-            The main user prompt to be sent to the model.
-        system_prompt : Optional[str], default=None
-            An optional system-level prompt to provide additional instructions or context.
+        user_prompt: str
+            The input prompt for the user.
+        system_prompt: Optional[str]
+            The optional system-level prompt.
 
         Returns:
         --------
-        dict
-            A dictionary containing all the fields extracted from the model's JSON response.
-
-        Raises:
-        -------
-        ValueError
-            If the response from the model cannot be parsed as valid JSON.
-
-        Notes:
-        ------
-        - The method expects the model's response to be in JSON format.
-        - Dynamically extracts all fields from the response, allowing flexible handling
-          of various output structures without causing key errors.
-        - Designed to handle scenarios where certain fields may be missing in the model's output.
+        tuple:
+            The reasoning and score extracted from the model's response.
         """
         messages = self._build_messages(user_prompt, system_prompt)
         completion = self._client.chat.completions.create(
@@ -140,17 +151,10 @@ class BaseJudge:
             messages=messages,
             response_format={"type": "json_object"},
         )
-
-        # Dynamically parse the JSON response
-        try:
-            data = json.loads(completion.choices[0].message.content)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON response: {e}")
-
-        # Extract all available fields
-        extracted_data = {key: data.get(key, None) for key in data}
-
-        return extracted_data
+        data = json.loads(completion.choices[0].message.content)
+        reasoning = data["REASONING"]
+        score = data["SCORE"]
+        return reasoning, score
 
     @abstractmethod
     def judge(
@@ -170,6 +174,11 @@ class BaseJudge:
             The output generated by the model.
         expected: str
             The output that the model was expected to generate.
+
+        Returns:
+        --------
+        Judgment:
+            The evaluation result containing the score and reasoning.
         """
         raise NotImplementedError("all judges must implement a judge method")
 
@@ -178,6 +187,13 @@ class BaseJudge:
 class Jury:
     r"""
     A jury is a set of judges that averages or takes the mode of all the scores.
+
+    Attributes:
+    -----------
+    judges: list[BaseJudge]
+        A list of judges that form the jury.
+    voting_method: str
+        The voting method used to aggregate scores, such as "majority".
 
     @misc{verga2024replacingjudgesjuriesevaluating,
         title={Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models},
@@ -191,6 +207,16 @@ class Jury:
     """
 
     def __init__(self, judges: list[BaseJudge], voting_method: str = "majority"):
+        """
+        Initialize the jury with a set of judges and a voting method.
+
+        Parameters:
+        -----------
+        judges: list[BaseJudge]
+            A list of judges to include in the jury.
+        voting_method: str
+            The voting method to use for aggregating judgments (default is "majority").
+        """
         self.judges = judges
         self.voting_method = AVAILABLE_VOTING_METHODS[voting_method]
 
@@ -200,7 +226,23 @@ class Jury:
         output: Optional[str] = None,
         expected: Optional[str] = None,
     ) -> Verdict:
+        """
+        Aggregate the judgments of all judges to produce a final verdict.
 
+        Parameters:
+        -----------
+        input: str
+            The input provided to the models for judgment.
+        output: str
+            The output generated by the model.
+        expected: str
+            The expected output for comparison.
+
+        Returns:
+        --------
+        Verdict:
+            The final verdict containing the aggregated score and individual judgments.
+        """
         judgments = []
         for judge in self.judges:
             judgment = judge.judge(
