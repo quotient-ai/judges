@@ -27,6 +27,10 @@ class HaystackBulletPointCoverageCorrectness(BaseJudge):
     Model(s) used in paper:
     -----------------------
     Claude 3 | Gemini 1.5
+
+    Prompt Edit:
+    ------------
+    We remove the authors' initial output standardization requirement i.e., "Rating: [[rating]]".
     """
 
     def judge(
