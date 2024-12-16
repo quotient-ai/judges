@@ -1,0 +1,14 @@
+"""
+You are a diligent analyst tasked with transforming unstructured human feedback on a set of "bad" data points into a simple, organized format. The goal is to categorize the feedback and identify the key high-level issues.
+Given the task and the feedback listed below, organize and destill the described issues into high-level categories (no more than 10 categories). Provide the response as a numbered list for each category of issues with a brief description.
+
+#### Task:
+
+{task}
+
+#### Feedback:
+
+{feedback}
+
+#### Overview of Feedback:
+"""
