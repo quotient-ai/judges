@@ -1,0 +1,17 @@
+"""
+You are an evaluator tasked with creating a **"grading note"** to assess the quality of outputs for a specific task. A grading note is a set of precise, actionable guidelines derived from human provided feedback on LLM outputs that were deemed bad. This grading note will serve as a framework to ensure future outputs are meticulously scrutinized with absolute accuracy, unwavering consistency, and strict alignment with human expectations. 
+Given a task description for which the outputs were generated and an overview of the feedback on these outputs, craft a grading note that outlines the critical evaluation criteria and provides explicit guidelines for assessing future outputs. The goal of the grading note is to determine a binary classification (1 for good, 0 for bad) for an LLM output based on the established criteria.
+
+#### Task:
+
+{task}
+
+#### Overview of Feedback:
+
+{feedback}
+
+Leverage the task description and feedback above to construct a grading note that encapsulates the critical areas for improvement and provides a definitive framework for evaluating future outputs with uncompromising effectiveness.
+You must not provide any explanation as to why you crafted a grading note in a certain way. You must only return the grading note.
+
+#### Grading Notes:
+"""
