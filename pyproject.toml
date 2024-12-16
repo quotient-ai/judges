@@ -24,9 +24,13 @@ classifiers = [
 
 
 [project.optional-dependencies]
+litellm = [
+    "litellm==1.54.1",
+]
 dev = [
     "openai-responses==0.11.2",
 ]
+
 
 
 [tool.setuptools.packages.find]
