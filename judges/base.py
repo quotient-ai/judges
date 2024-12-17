@@ -1,4 +1,5 @@
 import json
+import logging
 
 from abc import abstractmethod
 from dataclasses import dataclass
@@ -6,12 +7,14 @@ from typing import TYPE_CHECKING, Optional
 
 from openai import OpenAI
 
-from judges._models import get_available_models
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
 
 if TYPE_CHECKING:
     import pydantic
+
+litellm_logger = logging.getLogger("LiteLLM")
+litellm_logger.disabled = True
 
 
 @dataclass
@@ -85,24 +88,13 @@ class BaseJudge:
         self._client = self._configure_client()
 
     def _configure_client(self):
-        available_models = get_available_models()
-        model = next(
-            (model for model in available_models if model["name"] == self.model),
-            None,
-        )
-
-        if model is None:
-            raise ValueError(f"model `{self.model}` not found. Run `get_available_models()` to see all options.")
-
-        if model["client"] == "openai":
-            return OpenAI()
+        try:
+            import litellm
+        except ImportError:
+            # fallback to openai
+            client = OpenAI()
+            return client
         else:
-            try:
-                import litellm
-            except ImportError:
-                raise ImportError(
-                    "litellm is not installed. Please install judges[litellm] to use this model."
-                )
             return litellm
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
