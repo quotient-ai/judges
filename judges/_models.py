@@ -17,5 +17,5 @@ def get_available_models():
         for model in litellm_models:
             models.append({"client": "litellm", "name": model})
 
-    models = sorted(models, key=lambda x: x["client"])
+    models = sorted(models, key=lambda x: (x["client"], x["name"]))
     return models
