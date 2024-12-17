@@ -77,13 +77,6 @@ The library also provides an interface to combine multiple judges through the `J
 > [!TIP]  
 > If you choose to use `litellm` to use 3rd-party inference providers, and the model you want is not available via the function below, check the docs of the inference provider directly since `litellm` docs may not always be up to date.
 
-To see all models available, run:
-
-```python
-from judges import get_available_models
-
-print(get_available_models())
-```
 
 ### Send data to an LLM
 Next, if you'd like to use this package, you can follow the `example.py` below:
