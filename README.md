@@ -74,6 +74,9 @@ The library also provides an interface to combine multiple judges through the `J
 - **LiteLLM:** 
   - If you would like to use models on other inference providers, `judges` also integrates with `litellm` as an extra dependency. Run `pip install judges[litellm]`, and set the appropriate API keys based on the [LiteLLM Docs](https://docs.litellm.ai/docs/#basic-usage).
 
+> [!TIP]  
+> If you choose to use `litellm` to use 3rd-party inference providers, and the model you want is not available via the function below, check the docs of the inference provider directly since `litellm` docs may not always be up to date.
+
 To see all models available, run:
 
 ```python
