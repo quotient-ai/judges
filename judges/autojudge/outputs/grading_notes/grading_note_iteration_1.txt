@@ -1,46 +1,40 @@
-#### Grading Note for Evaluating Travel-Related Q&A Responses
+#### Grading Note for Evaluating AI-Generated Responses
 
-**Objective:** To ensure that the travel-related Q&A responses provided by the LLM are accurate, relevant, and feasible, adhering strictly to real-world facts and current technological capabilities.
+**Objective:** To determine if the AI-generated response is suitable (1) or unsuitable (0) based on its ability to provide accurate, realistic, and contextually appropriate information in response to the user's query.
 
 **Criteria for Evaluation:**
 
-1. **Factual Accuracy:**
-   - **Requirement:** All responses must be factually correct and verifiable.
-   - **Check:** Verify the accuracy of geographical, historical, and cultural information against reliable sources.
-   - **Flag as Bad (0):** If any part of the response contains incorrect or misleading information that can be factually disproven.
+1. **Accuracy of Information:**
+   - **Factual Accuracy:** The response must contain information that is verifiable and aligns with current, established facts. Any deviation from factual accuracy, such as incorrect data points, historical inaccuracies, or misrepresentation of scientific facts, should result in a classification of 0.
+   - **Technological Realism:** The response should only reference technologies that currently exist and are scientifically feasible. Mention of non-existent or speculative technologies without clear indications that they are theoretical or futuristic concepts should result in a classification of 0.
 
-2. **Relevance to Reality:**
-   - **Requirement:** Responses must only reference real-world locations, entities, and phenomena.
-   - **Check:** Ensure that no mythical, fictional, or non-existent locations or creatures are mentioned.
-   - **Flag as Bad (0):** If the response includes references to mythical or fictional content such as Atlantis, unicorns, etc.
+2. **Presentation of Content:**
+   - **Mythical/Fictional Elements:** Any content that presents mythical, fictional, or fantastical elements as real-world facts should be classified as 0. This includes treating fictional locations, creatures, or phenomena as if they exist in reality.
+   - **Astrobiological Claims:** Statements about extraterrestrial life or environments must align with the current scientific consensus. Any claim contradicting established astrobiological research or presenting speculative ideas as facts should result in a classification of 0.
 
-3. **Technological Realism:**
-   - **Requirement:** The response must align with current technological capabilities and scientific understanding.
-   - **Check:** Assess the feasibility of the technology or capability mentioned in the response.
-   - **Flag as Bad (0):** If the response suggests or relies on technologies or capabilities that do not exist or are not currently feasible (e.g., teleportation, time travel).
+3. **Contextual Relevance:**
+   - The response must directly address the user’s query. It should be relevant and provide information or solutions that are directly related to the question asked. Irrelevant or tangentially related responses should be classified as 0.
 
-4. **Astrobiological Accuracy:**
-   - **Requirement:** Statements regarding extraterrestrial environments must be scientifically supported.
-   - **Check:** Cross-reference claims about extraterrestrial life or environments with current scientific consensus and research.
-   - **Flag as Bad (0):** If the response includes unsupported claims about life or conditions on other planets or moons.
+4. **Clarity and Coherence:**
+   - The response should be logically structured, clear, and easy to understand. It should not contain contradictions or confusing statements that could mislead or confuse the user. Lack of clarity or coherence in the response should result in a classification of 0.
 
 **Procedure for Evaluation:**
-   - **Step 1:** Read the user query and the LLM’s response thoroughly.
-   - **Step 2:** Apply the criteria listed above to evaluate the response.
-   - **Step 3:** Check each criterion independently; if any criterion is violated, classify the response as Bad (0).
-   - **Step 4:** If all criteria are satisfied without violations, classify the response as Good (1).
+   - Review the user's query and the AI-generated response.
+   - Assess the response against each criterion listed above.
+   - If the response fails any of the criteria, classify the response as 0 (unsuitable).
+   - If the response meets all the criteria, classify the response as 1 (suitable).
 
-**Additional Notes:**
-   - Responses should not only avoid inaccuracies but also be clear and directly address the user's query.
-   - Evaluators should use the latest and most reliable sources for fact-checking and verification to maintain the integrity of the evaluation process.
+**Documentation:**
+   - For each evaluation, document which criteria the response failed to meet, providing specific examples from the response to support the classification decision.
 
-This grading note is designed to ensure that all travel-related Q&A responses from the LLM meet the highest standards of accuracy, relevance, and realism, providing users with trustworthy and practical information.
+**Final Note:**
+   - This grading note is designed to ensure that all AI-generated responses are scrutinized for factual accuracy, realism, relevance, and clarity. The goal is to enhance the reliability and usefulness of AI-generated content in addressing user queries effectively and accurately.
 
 """
 Your response must be structured as a JSON object with the following format:
 {{
-  "SCORE": True | False, 
-  "REASONING": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
+  "Classification": True | False, 
+  "Explanation": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
 }}
 
 Now consider the following input to an LLM and the corresponding output. Evaluate the output based on the grading notes.

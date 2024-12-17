@@ -1,8 +1,8 @@
 """
 Your response must be structured as a JSON object with the following format:
 {{
-  "SCORE": True | False, 
-  "REASONING": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
+  "Classification": True | False, 
+  "Explanation": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
 }}
 
 Now consider the following input to an LLM and the corresponding output. Evaluate the output based on the grading notes.
