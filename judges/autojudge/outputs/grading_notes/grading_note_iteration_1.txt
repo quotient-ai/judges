@@ -1,0 +1,63 @@
+#### Grading Note for Evaluating Travel-Related Q&A Responses
+
+**Objective:** To ensure that the travel-related Q&A responses provided by the LLM are accurate, relevant, and feasible, adhering strictly to real-world facts and current technological capabilities.
+
+**Criteria for Evaluation:**
+
+1. **Factual Accuracy:**
+   - **Requirement:** All responses must be factually correct and verifiable.
+   - **Check:** Verify the accuracy of geographical, historical, and cultural information against reliable sources.
+   - **Flag as Bad (0):** If any part of the response contains incorrect or misleading information that can be factually disproven.
+
+2. **Relevance to Reality:**
+   - **Requirement:** Responses must only reference real-world locations, entities, and phenomena.
+   - **Check:** Ensure that no mythical, fictional, or non-existent locations or creatures are mentioned.
+   - **Flag as Bad (0):** If the response includes references to mythical or fictional content such as Atlantis, unicorns, etc.
+
+3. **Technological Realism:**
+   - **Requirement:** The response must align with current technological capabilities and scientific understanding.
+   - **Check:** Assess the feasibility of the technology or capability mentioned in the response.
+   - **Flag as Bad (0):** If the response suggests or relies on technologies or capabilities that do not exist or are not currently feasible (e.g., teleportation, time travel).
+
+4. **Astrobiological Accuracy:**
+   - **Requirement:** Statements regarding extraterrestrial environments must be scientifically supported.
+   - **Check:** Cross-reference claims about extraterrestrial life or environments with current scientific consensus and research.
+   - **Flag as Bad (0):** If the response includes unsupported claims about life or conditions on other planets or moons.
+
+**Procedure for Evaluation:**
+   - **Step 1:** Read the user query and the LLM’s response thoroughly.
+   - **Step 2:** Apply the criteria listed above to evaluate the response.
+   - **Step 3:** Check each criterion independently; if any criterion is violated, classify the response as Bad (0).
+   - **Step 4:** If all criteria are satisfied without violations, classify the response as Good (1).
+
+**Additional Notes:**
+   - Responses should not only avoid inaccuracies but also be clear and directly address the user's query.
+   - Evaluators should use the latest and most reliable sources for fact-checking and verification to maintain the integrity of the evaluation process.
+
+This grading note is designed to ensure that all travel-related Q&A responses from the LLM meet the highest standards of accuracy, relevance, and realism, providing users with trustworthy and practical information.
+
+"""
+Your response must be structured as a JSON object with the following format:
+{{
+  "SCORE": True | False, 
+  "REASONING": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
+}}
+
+Now consider the following input to an LLM and the corresponding output. Evaluate the output based on the grading notes.
+
+### Input ###
+-------------
+
+{input}
+
+--------------
+### Output ###
+--------------
+
+{output}
+
+------------------
+### Evaluation ###
+------------------
+"""
+

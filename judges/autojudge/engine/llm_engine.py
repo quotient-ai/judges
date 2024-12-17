@@ -23,8 +23,8 @@ class Recommendation(BaseModel):
     Revision: str
 
 class GradingNote(BaseModel):
-    SCORE: bool
-    REASONING: str
+    Classification: bool
+    Explanation: str
 
 class LLMRequest(BaseModel):
     content: str
