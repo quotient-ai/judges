@@ -337,29 +337,29 @@ class AutoJudge(BaseJudge):
             Path,
             List[Dict[str, Union[str, int]]],
         ],
-        task_description: str,
+        task: str,
         model: str = "gpt-4-turbo-2024-04-09",
         max_workers: int = 2,
     ) -> "AutoJudge":
         """
         Create an instance of the AutoJudge class from a dataset and task description.
 
-        Args:
-            dataset (Union[str, Path, List[Dict[str, Union[str, int]]]]): Dataset to be evaluated.
-            task_description (str): Description of the evaluation task.
-            model (str, optional): Model name for evaluation. Defaults to "gpt-4-turbo-2024-04-09".
-            max_workers (int, optional): Number of workers for parallel evaluation. Defaults to 2.
+        Parameters:
+        -----------
+        dataset, str or Path: 
+            The path to the dataset file or a list of dictionaries.
+        task, str:
+            A description of the task to be accomplished.
 
         Returns:
-            AutoJudge: An instance of the AutoJudge class.
-
-        Raises:
-            ValueError: If dataset or task_description is not provided or if dataset is empty.
+        --------
+        AutoJudge:
+            An instance of the AutoJudge class.
         """
         if not dataset:
             raise ValueError("Please provide a dataset.")
 
-        if not task_description:
+        if not task:
             raise ValueError("Please describe the task you are trying to accomplish.")
 
         data = cls.load_data(dataset=dataset)
@@ -384,10 +384,10 @@ class AutoJudge(BaseJudge):
         )
 
         structured_feedback = autojudge.generate_structured_feedback(
-            task=task_description,
+            task=task,
             feedback=aggregated_feedback,
         )
-        grading_notes = autojudge.generate_grading_notes(structured_feedback, task_description)
+        grading_notes = autojudge.generate_grading_notes(structured_feedback, task)
 
         evaluations = autojudge.evaluate(
             data=data,
