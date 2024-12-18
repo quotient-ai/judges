@@ -9,6 +9,8 @@ from openai import OpenAI
 
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
+from judges._client import get_completion
+
 
 if TYPE_CHECKING:
     import pydantic
@@ -85,17 +87,6 @@ class BaseJudge:
             The model identifier to be used for evaluations.
         """
         self.model = model
-        self._client = self._configure_client()
-
-    def _configure_client(self):
-        try:
-            import litellm
-        except ImportError:
-            # fallback to openai
-            client = OpenAI()
-            return client
-        else:
-            return litellm
 
     def _build_messages(self, user_prompt: str, system_prompt: Optional[str] = None):
         """
@@ -142,10 +133,14 @@ class BaseJudge:
             The reasoning and score extracted from the model's response.
         """
         messages = self._build_messages(user_prompt, system_prompt)
-        completion = self._client.chat.completions.create(
+
+        completion = get_completion(
             model=self.model,
             messages=messages,
-            response_format={"type": "json_object"},
+            max_tokens=None,
+            temperature=1,
+            seed=None,
+            response_model=None,
         )
         data = json.loads(completion.choices[0].message.content)
         reasoning = data["REASONING"]
