@@ -27,6 +27,9 @@ classifiers = [
 litellm = [
     "litellm==1.55.3",
 ]
+autojudge = [
+    "instructor==1.7.0"
+]
 dev = [
     "openai-responses==0.11.2",
 ]
