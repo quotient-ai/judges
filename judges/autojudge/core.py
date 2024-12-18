@@ -337,31 +337,43 @@ class AutoJudge(BaseJudge):
             Path,
             List[Dict[str, Union[str, int]]],
         ],
+        task_description: str,
         model: str = "gpt-4-turbo-2024-04-09",
         max_workers: int = 2,
     ) -> "AutoJudge":
         """
-        Create an instance of the AutoJudge class from a dataset.
+        Create an instance of the AutoJudge class from a dataset and task description.
+
+        Args:
+            dataset (Union[str, Path, List[Dict[str, Union[str, int]]]]): Dataset to be evaluated.
+            task_description (str): Description of the evaluation task.
+            model (str, optional): Model name for evaluation. Defaults to "gpt-4-turbo-2024-04-09".
+            max_workers (int, optional): Number of workers for parallel evaluation. Defaults to 2.
+
+        Returns:
+            AutoJudge: An instance of the AutoJudge class.
+
+        Raises:
+            ValueError: If dataset or task_description is not provided or if dataset is empty.
         """
+        if not dataset:
+            raise ValueError("Please provide a dataset.")
+
+        if not task_description:
+            raise ValueError("Please describe the task you are trying to accomplish.")
+
         data = cls.load_data(dataset=dataset)
 
         if not data:
-            logger.error("no data loaded. Cannot run pipeline.")
-            raise ValueError("dataset is empty.")
+            logger.error("No data loaded. Cannot run pipeline.")
+            raise ValueError("Dataset is empty.")
 
         aggregated_feedback = cls.aggregate_feedback(data)
         if not aggregated_feedback:
             logger.warning(
-                "no feedback to process. Returning an instance without evaluation."
+                "No feedback to process. Returning an instance without evaluation."
             )
             return cls()
-
-        task = (
-            "The task involves assessing the quality of AI-generated responses by evaluating whether "
-            "each completion (the assistant’s reply) appropriately and effectively addresses the "
-            "corresponding input (the user’s query), with labels indicating whether the response "
-            "is suitable (1) or unsuitable (0)."
-        )
 
         # Create an instance of AutoJudge
         autojudge = cls(
@@ -372,10 +384,10 @@ class AutoJudge(BaseJudge):
         )
 
         structured_feedback = autojudge.generate_structured_feedback(
-            task=task,
+            task=task_description,
             feedback=aggregated_feedback,
         )
-        grading_notes = autojudge.generate_grading_notes(structured_feedback, task)
+        grading_notes = autojudge.generate_grading_notes(structured_feedback, task_description)
 
         evaluations = autojudge.evaluate(
             data=data,
@@ -388,12 +400,11 @@ class AutoJudge(BaseJudge):
             classifications=classifications,
         )
 
-        # Display sample outputs
-        logger.info("sample llm outputs:")
+        logger.info("Sample LLM outputs:")
         for eval_result in evaluations[:5]:
             logger.info(eval_result)
 
-        logger.info("sample slassification results (grading note):")
+        logger.info("Sample classification results (grading note):")
         classification_counts = {}
         for classification_val in classifications:
             classification_counts[classification_val] = (
@@ -402,7 +413,7 @@ class AutoJudge(BaseJudge):
 
         logger.info(classification_counts)
 
-        logger.info("sample classification results (human labels):")
+        logger.info("Sample classification results (human labels):")
         human_labels = {}
         for row in data[:10]:
             label = int(row["label"])
@@ -410,13 +421,14 @@ class AutoJudge(BaseJudge):
 
         logger.info(human_labels)
 
-        logger.info("final evaluation metrics:")
+        logger.info("Final evaluation metrics:")
         for metric, value in metrics.items():
             logger.info(f"{metric}: {value}")
 
         # Assign the grading_notes as the user_prompt to the instance for future judging
         autojudge.user_prompt = grading_notes
         return autojudge
+
 
     def judge(
         self,
