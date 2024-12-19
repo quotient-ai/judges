@@ -21,10 +21,10 @@ def llm_client():
         return litellm
 
 
-# @retry(
-#     wait=wait_random_exponential(min=1, max=60),
-#     stop=stop_after_attempt(5),
-# )
+@retry(
+    wait=wait_random_exponential(min=1, max=60),
+    stop=stop_after_attempt(5),
+)
 def get_completion(
     messages: list[dict[str, str]],
     model: str,
