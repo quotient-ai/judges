@@ -8,9 +8,7 @@ from typing import Optional, Union, List, Dict
 
 from pydantic import BaseModel
 
-from dotenv import load_dotenv
 
-load_dotenv()
 
 from judges.autojudge.metrics import (
     confusion_matrix as cm_func,
@@ -51,7 +49,8 @@ class AutoJudge(BaseJudge):
 
     def __init__(
         self,
-        model: str = "gpt-4-turbo-2024-04-09",
+        # model: str = "gpt-4-turbo-2024-04-09",
+        model: str = "gpt-4-turbo",
         max_workers: int = 2,
         system_prompt: Optional[str] = '',
         user_prompt: Optional[str] = None,
@@ -143,7 +142,7 @@ class AutoJudge(BaseJudge):
                 {"role": "system", "content": ''},
                 {"role": "user", "content": formatted_prompt},
             ]
-            
+
             completion = get_completion(
                 messages=messages,
                 model=self.model,
