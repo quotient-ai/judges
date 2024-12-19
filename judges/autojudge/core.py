@@ -8,6 +8,10 @@ from typing import Optional, Union, List, Dict
 
 from pydantic import BaseModel
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from judges.autojudge.metrics import (
     confusion_matrix as cm_func,
     calculate_accuracy,
@@ -49,7 +53,7 @@ class AutoJudge(BaseJudge):
         self,
         model: str = "gpt-4-turbo-2024-04-09",
         max_workers: int = 2,
-        system_prompt: Optional[str] = None,
+        system_prompt: Optional[str] = '',
         user_prompt: Optional[str] = None,
     ):
         """
@@ -69,9 +73,10 @@ class AutoJudge(BaseJudge):
         ],
     ) -> List[Dict[str, Union[str, int]]]:
         """
-        Loads the dataset from a file or a list of dictionaries.
+        Loads the dataset from a file or a list of dictionaries and validates required columns.
         """
         logger.info("loading dataset...")
+        required_columns = {"label", "feedback", "input", "output"}
         data = []
         try:
             if isinstance(dataset, (str, Path)):
@@ -83,10 +88,18 @@ class AutoJudge(BaseJudge):
                 data = dataset
             else:
                 raise TypeError("Dataset must be a file path or a list of dictionaries")
+
+            # Check for required columns
+            if not data or not all(required_columns.issubset(row.keys()) for row in data):
+                raise ValueError(f"Dataset is missing one or more required columns: {required_columns}")
+
             logger.info(f"data loaded successfully with {len(data)} record(s)")
         except Exception as e:
             logger.error(f"error loading dataset: {e}")
             raise
+
+        return data
+
 
         return data
 
@@ -117,9 +130,6 @@ class AutoJudge(BaseJudge):
         return aggregated_feedback
 
     def generate_structured_feedback(self, task: str, feedback: str) -> str:
-        """
-        Generates structured feedback using the LLM.
-        """
         try:
             logger.info(f"generating structured feedback using {self.model}")
 
@@ -127,11 +137,13 @@ class AutoJudge(BaseJudge):
                 task=task,
                 feedback=feedback,
             )
+            logger.debug(f"Generated prompt: {formatted_prompt}")
 
             messages = [
-                {"role": "system", "content": self.system_prompt},
+                {"role": "system", "content": ''},
                 {"role": "user", "content": formatted_prompt},
             ]
+            
             completion = get_completion(
                 messages=messages,
                 model=self.model,
@@ -141,13 +153,18 @@ class AutoJudge(BaseJudge):
                 response_model=None,
             )
 
+            if not completion or not completion.choices:
+                raise ValueError("Empty response from LLM.")
+
             structured_feedback = completion.choices[0].message.content.strip()
             logger.debug(f"structured Feedback: {structured_feedback}")
         except Exception as e:
             logger.error(f"error generating structured feedback: {e}")
+            logger.error(f"Prompt causing error: {messages}")
             raise
 
         return structured_feedback
+
 
     def generate_grading_notes(
         self,
@@ -166,9 +183,10 @@ class AutoJudge(BaseJudge):
             )
 
             messages = [
-                {"role": "system", "content": self.system_prompt},
+                {"role": "system", "content": ''},
                 {"role": "user", "content": formatted_prompt},
             ]
+
             # Generate the raw rubric
             completion = get_completion(
                 messages=messages,
@@ -191,80 +209,63 @@ class AutoJudge(BaseJudge):
 
         return grading_notes
 
+   
+
     def evaluate(
         self,
         data: List[Dict[str, Union[str, int]]],
         grading_notes: str,
         max_workers: int,
     ) -> List[GradingNote]:
-        """
-        Evaluates each response in the dataset using multithreaded LLM completions.
-        """
-        if not grading_notes:
-            logger.error("grading notes not generated. cannot evaluate responses.")
-            raise ValueError("grading notes are missing.")
-
-        logger.info(
-            f"evaluating responses using generated grading notes with {max_workers} threads."
-        )
-
+        errors = []
         evaluations = []
-        try:
-            if not data or "output" not in data[0]:
-                logger.error("'output' column not found in the dataset.")
-                raise KeyError("'output' column missing.")
 
-            def _evaluate(row):
+        def _evaluate(row):
+            try:
                 output = row.get("output", "")
                 input = row.get("input", "")
-
                 if not output:
-                    logger.info("empty output found. classification will be False")
-                    grading_note = GradingNote(
-                        Classification=False,
-                        Explanation="No response provided for evaluation.",
-                    )
-                    return grading_note
+                    raise ValueError("Empty output provided for evaluation.")
 
-                try:
-                    grading_note_formatted = grading_notes.format(
-                        input=input,
-                        output=output,
-                    )
-                    messages = [
-                        {"role": "system", "content": self.system_prompt},
-                        {"role": "user", "content": grading_note_formatted},
-                    ]
-                    grading_note = get_completion(
-                        messages=messages,
-                        model=self.model,
-                        temperature=0,
-                        max_tokens=1024,
-                        seed=42,
-                        response_model=GradingNote,
-                    )
-                except Exception as e:
-                    logger.error(f"error processing completion: {e}")
-                    grading_note = GradingNote(
-                        Classification=False,
-                        Explanation="LLM Error: Failed to generate response.",
-                    )
-                    return grading_note
+                formatted_grading_note = grading_notes.format(input=input, output=output)
 
-                return grading_note
+                messages = [
+                {"role": "system", "content": ''},
+                {"role": "user", "content": formatted_grading_note},
+            ]
+                response = get_completion(
+                    messages=messages,
+                    model=self.model,
+                    temperature=0,
+                    max_tokens=1024,
+                    seed=42,
+                    response_model=GradingNote,
+                )
 
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                future_to_row = {executor.submit(_evaluate, row): row for row in data}
-                for future in as_completed(future_to_row):
-                    grading_note_result = future.result()
-                    evaluations.append(grading_note_result)
+                if not response:
+                    raise ValueError("Empty response from LLM.")
 
-            logger.info("completed evaluating all responses.")
-        except Exception as e:
-            logger.error(f"error during multithreaded response evaluation: {e}")
-            raise
+                return response
+            except Exception as e:
+                logger.error(f"Error evaluating row {row}: {e}")
+                errors.append((row, e))
+                return GradingNote(Classification=False, Explanation=str(e))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_row = {executor.submit(_evaluate, row): row for row in data}
+            for future in as_completed(future_to_row):
+                result = future.result()
+                evaluations.append(result)
+
+        if errors:
+            logger.warning(f"{len(errors)} rows failed evaluation.")
+            for row, error in errors:
+                logger.error(f"Error for row: {row}, Error: {error}")
 
         return evaluations
+
+
+
 
     @staticmethod
     def classify(evaluations: List[GradingNote]) -> List[int]:
