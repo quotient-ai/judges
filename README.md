@@ -183,9 +183,7 @@ Example:
 | input                             | output                                                              | label | feedback                              |
 |-----------------------------------|---------------------------------------------------------------------|-------|---------------------------------------|
 | What's the best time to visit Paris? | The best time to visit Paris is during the spring or fall.          | 1     | Provides accurate and detailed advice. |
-
----
-
+| Can I ride a dragon in Scotland? | Yes, dragons are commonly seen in the highlands and can be ridden with proper training          | 0     | Dragons are mythical creatures; the information is fictional. |
 
 **Step 2 - Initialize your `autojudge`:**
 Provide a labeled dataset and describe the evaluation task.  
@@ -226,8 +224,8 @@ task = "Evaluate responses for accuracy, clarity, and helpfulness."
 
 # Initialize autojudge
 autojudge = AutoJudge.from_dataset(
-    dataset=dataset_path,
-    task=task_description,
+    dataset=dataset,
+    task=task,
     model="gpt-4-turbo-2024-04-09",
     # increase workers for speed ⚡
     # max_workers=2,
@@ -235,8 +233,6 @@ autojudge = AutoJudge.from_dataset(
     # save_to_disk=False,
 )
 ```
-
----
 
 **Step 3 - Use your judge to evaluate new input-output pairs:**
 You can use `autojudge` to evaluate a single input-output pair using the `.judge()` method.  
