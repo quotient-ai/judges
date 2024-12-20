@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "judges"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
     {name = "James Liounis", email = "james@quotientai.co"},
 ]
-description = "A small library for off-the-shelf LLMs as judges."
+description = "A small library of research-backed LLM judges"
 dependencies = [
     "openai == 1.57.4",
 ]
@@ -35,8 +35,6 @@ auto = [
 dev = [
     "openai-responses==0.11.2",
 ]
-
-
 
 [tool.setuptools.packages.find]
 include = ["judges*"]
