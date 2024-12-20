@@ -228,10 +228,11 @@ task = "Evaluate responses for accuracy, clarity, and helpfulness."
 autojudge = AutoJudge.from_dataset(
     dataset=dataset_path,
     task=task_description,
-    # specify which model you want to use
     model="gpt-4-turbo-2024-04-09",
     # increase workers for speed ⚡
-    max_workers=2,
+    # max_workers=2,
+    # generated prompts are automatically saved to disk
+    # save_to_disk=False,
 )
 ```
 
