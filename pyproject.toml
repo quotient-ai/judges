@@ -27,6 +27,11 @@ classifiers = [
 litellm = [
     "litellm==1.55.3",
 ]
+auto = [
+    "instructor==1.7.0",
+    "pydantic==2.10.3",
+    "tenacity==9.0.0",
+]
 dev = [
     "openai-responses==0.11.2",
 ]
