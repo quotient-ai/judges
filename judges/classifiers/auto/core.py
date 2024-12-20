@@ -37,11 +37,6 @@ class GradingNote(BaseModel):
     Classification: bool
     Explanation: str
 
-class JudgmentStructure(BaseModel):
-    SCORE: bool
-    REASONING: str
-
-
 
 class AutoJudge(BaseJudge):
     """
