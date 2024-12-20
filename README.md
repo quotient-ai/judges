@@ -11,7 +11,7 @@
    - [Combining Judges](#combining-judges)
      - [Jury Object](#jury-object)
 4. [Usage](#usage)
-   - [Pick a model(#pick-a-model)
+   - [Pick a model](#pick-a-model)
    - [Send data to an LLM](#send-data-to-an-llm)
    - [Use a `judges` classifier LLM as an evaluator model](#use-a-judges-classifier-llm-as-an-evaluator-model)
    - [Use a `Jury` for averaging and diversification](#use-a-jury-for-averaging-and-diversification)
