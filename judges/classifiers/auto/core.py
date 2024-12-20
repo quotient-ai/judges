@@ -37,6 +37,11 @@ class GradingNote(BaseModel):
     Classification: bool
     Explanation: str
 
+class JudgmentStructure(BaseModel):
+    SCORE: bool
+    REASONING: str
+
+
 
 class AutoJudge(BaseJudge):
     """
@@ -421,8 +426,9 @@ class AutoJudge(BaseJudge):
 
         logger.info(f"final evaluation metrics: {metrics}")
         # Assign the grading_notes as the user_prompt to the instance for future judging
-        autojudge.user_prompt = grading_notes
-        autojudge._save_prompts(user_prompt=grading_notes, system_prompt="")
+        final_grading_notes = grading_notes.replace(FORMAT_RUBRIC_USER_PROMPT, "").strip()
+        autojudge.user_prompt = final_grading_notes
+        autojudge._save_prompts(user_prompt=final_grading_notes, system_prompt="")
         return autojudge
 
     def _save_prompts(self, user_prompt: str, system_prompt: str):
@@ -466,8 +472,6 @@ class AutoJudge(BaseJudge):
 
             Input: {input}
             Response: {output}
-
-            Respond in JSON format. {{"REASONING": "[...]", "SCORE": "<your-score>"}}
             """
         )
         reasoning, score = self._judge(
