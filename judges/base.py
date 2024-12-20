@@ -36,9 +36,9 @@ class Judgment:
         """
         Post-initialization to normalize score values for consistency.
         """
-        if self.score.lower() in ["yes", "true", 1, "good"]:
+        if self.score.lower() in ["yes", "true", 1, "1", "good"]:
             self.score = True
-        elif self.score.lower() in ["no", "false", 0, "bad"]:
+        elif self.score.lower() in ["no", "false", 0, "0", "bad"]:
             self.score = False
 
 
