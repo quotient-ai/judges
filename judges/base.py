@@ -138,6 +138,7 @@ class BaseJudge:
             temperature=1,
             seed=None,
             response_model=None,
+            response_format={"type": "json_object"}
         )
         data = json.loads(completion.choices[0].message.content)
         reasoning = data["REASONING"]

@@ -2,6 +2,7 @@ import csv
 import logging
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from pathlib import Path
 from textwrap import dedent
 from typing import Optional, Union, List, Dict
@@ -49,6 +50,7 @@ class AutoJudge(BaseJudge):
         max_workers: int = 2,
         system_prompt: Optional[str] = '',
         user_prompt: Optional[str] = None,
+        save_to_disk: bool = True,
     ):
         """
         Initializes the AutoJudge with the specified model and directories.
@@ -57,6 +59,7 @@ class AutoJudge(BaseJudge):
         self.max_workers = max_workers
         self.system_prompt = system_prompt
         self.user_prompt = user_prompt
+        self.save_to_disk = save_to_disk
 
     @staticmethod
     def load_data(
@@ -203,7 +206,7 @@ class AutoJudge(BaseJudge):
 
         return grading_notes
 
-   
+
 
     def evaluate(
         self,
@@ -341,7 +344,7 @@ class AutoJudge(BaseJudge):
 
         Parameters:
         -----------
-        dataset, str or Path: 
+        dataset, str or Path:
             The path to the dataset file or a list of dictionaries.
         task, str:
             A description of the task to be accomplished.
@@ -419,8 +422,28 @@ class AutoJudge(BaseJudge):
         logger.info(f"final evaluation metrics: {metrics}")
         # Assign the grading_notes as the user_prompt to the instance for future judging
         autojudge.user_prompt = grading_notes
+        autojudge._save_prompts(user_prompt=grading_notes, system_prompt="")
         return autojudge
 
+    def _save_prompts(self, user_prompt: str, system_prompt: str):
+        """
+        Save the user and system prompts to disk for future use.
+
+        Parameters:
+        -----------
+        user_prompt: str
+            The user prompt to save.
+        system_prompt: str
+            The system prompt to save.
+        """
+        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S")
+        if self.save_to_disk:
+            with open(f"autojudge-user-prompt-{current_time}.txt", "w") as f:
+                f.write(user_prompt)
+            with open(f"autojudge-system-prompt-{current_time}.txt", "w") as f:
+                f.write(system_prompt)
+
+            logger.info("judge prompts automatically saved to disk.")
 
     def judge(
         self,
