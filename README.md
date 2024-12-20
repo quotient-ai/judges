@@ -15,6 +15,7 @@
    - [Send data to an LLM](#send-data-to-an-llm)
    - [Use a `judges` classifier LLM as an evaluator model](#use-a-judges-classifier-llm-as-an-evaluator-model)
    - [Use a `Jury` for averaging and diversification](#use-a-jury-for-averaging-and-diversification)
+   - [Use `AutoJudge` to create a custom LLM judge](#use-auto-judge-to-create-a-custom-llm-judge)
 5. [Appendix of Judges](#appendix)
    - [Classifiers](#classifiers) 
    - [Grader](#graders) 
@@ -157,6 +158,101 @@ verdict = jury.vote(
     expected=expected,
 )
 print(verdict.score)
+```
+
+### Use `AutoJudge` to create a custom LLM judge
+
+`autojudge` is an extension to the **judges** library -- given a labeled dataset with feedback, `autojudge` creates custom, task-specific LLM judges.
+
+`autojudge` is included in the **judges** library. Install it using:  
+
+```bash
+pip install judges[auto]
+```
+
+**Step 1 - Prepare your dataset:**
+Your dataset can be either a list of dictionaries or path to a csv file with the following fields:
+
+- **`input`**: The input provided to your model
+- **`output`**: The model's response
+- **`label`**: `1` for correct, `0` for incorrect  
+- **`feedback`**: Feedback explaining why the response is correct or incorrect 
+
+Example:  
+
+| input                             | output                                                              | label | feedback                              |
+|-----------------------------------|---------------------------------------------------------------------|-------|---------------------------------------|
+| What's the best time to visit Paris? | The best time to visit Paris is during the spring or fall.          | 1     | Provides accurate and detailed advice. |
+
+---
+
+
+**Step 2 - Initialize your `autojudge`:**
+Provide a labeled dataset and describe the evaluation task.  
+
+```python
+from judges.classifiers.auto import AutoJudge
+
+dataset = [
+    {
+        "input": "Can I ride a dragon in Scotland?",
+        "output": "Yes, dragons are commonly seen in the highlands and can be ridden with proper training.",
+        "label": 0,
+        "feedback": "Dragons are mythical creatures; the information is fictional.",
+    },
+    {
+        "input": "Can you recommend a good hotel in Tokyo?",
+        "output": "Certainly! Hotel Sunroute Plaza Shinjuku is highly rated for its location and amenities. It offers comfortable rooms and excellent service.",
+        "label": 1,
+        "feedback": "Offers a specific and helpful recommendation.",
+    },
+    {
+        "input": "Can I drink tap water in London?",
+        "output": "Yes, tap water in London is safe to drink and meets high quality standards.",
+        "label": 1,
+        "feedback": "Gives clear and reassuring information.",
+    },
+    {
+        "input": "What's the boiling point of water on the moon?",
+        "output": "The boiling point of water on the moon is 100°C, the same as on Earth.",
+        "label": 0,
+        "feedback": "Boiling point varies with pressure; the moon's vacuum affects it.",
+    }
+]
+
+
+# Task description
+task = "Evaluate responses for accuracy, clarity, and helpfulness."
+
+# Initialize autojudge
+autojudge = AutoJudge.from_dataset(
+    dataset=dataset_path,
+    task=task_description,
+    # specify which model you want to use
+    model="gpt-4-turbo-2024-04-09",
+    # increase workers for speed ⚡
+    max_workers=2,
+)
+```
+
+---
+
+**Step 3 - Use your judge to evaluate new input-output pairs:**
+You can use `autojudge` to evaluate a single input-output pair using the `.judge()` method.  
+
+```python
+# Input-output pair to evaluate
+input_ = "What are the top attractions in New York City?"
+output = "Some top attractions in NYC include the Statue of Liberty and Central Park."
+
+# Get the judgment
+judgment = autojudge.judge(input=input_, output=output)
+
+# Print the judgment
+print(judgment.reasoning)
+# The response accurately lists popular attractions like the Statue of Liberty and Central Park, which are well-known and relevant to the user's query.
+print(judgment.score)
+# True (correct)
 ```
 
 ## Appendix
