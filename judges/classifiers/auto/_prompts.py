@@ -20,8 +20,8 @@ You must not provide any explanation as to why you crafted a grading note in a c
 FORMAT_RUBRIC_USER_PROMPT = """
 Your response must be structured as a JSON object with the following format:
 {{
-  "Classification": True | False, 
-  "Explanation": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
+  "SCORE": True | False, 
+  "REASONING": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
 }}
 
 Now consider the following input to an LLM and the corresponding output. Evaluate the output based on the grading notes.
