@@ -15,7 +15,7 @@
    - [Send data to an LLM](#send-data-to-an-llm)
    - [Use a `judges` classifier LLM as an evaluator model](#use-a-judges-classifier-llm-as-an-evaluator-model)
    - [Use a `Jury` for averaging and diversification](#use-a-jury-for-averaging-and-diversification)
-   - [Use `AutoJudge` to create a custom LLM judge](#use-auto-judge-to-create-a-custom-llm-judge)
+   - [Use `AutoJudge` to create a custom LLM judge](#use-autojudge-to-create-a-custom-llm-judge)
 5. [Appendix of Judges](#appendix)
    - [Classifiers](#classifiers) 
    - [Grader](#graders) 
