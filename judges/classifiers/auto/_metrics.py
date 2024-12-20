@@ -94,7 +94,7 @@ def calculate_recall(
     if average == "binary":
         if len(classes) != 2:
             raise ValueError(
-                "Binary recall is only applicable for binary classification."
+                "please provide at least 1 positive label and 1 negative label."
             )
         positive_class = classes[1]
         TP = confusion_matrix[positive_class][positive_class]

@@ -8,7 +8,7 @@ from typing import Optional, Union, List, Dict
 
 from pydantic import BaseModel
 
-from judges.autojudge.metrics import (
+from judges.classifiers.auto._metrics import (
     confusion_matrix as cm_func,
     calculate_accuracy,
     calculate_precision,
@@ -16,7 +16,7 @@ from judges.autojudge.metrics import (
     calculate_f1,
     calculate_kappa,
 )
-from judges.autojudge.prompts import (
+from judges.classifiers.auto._prompts import (
     GENERATE_RUBRIC_USER_PROMPT,
     FORMAT_RUBRIC_USER_PROMPT,
     STRUCTURE_FEEDBACK_USER_PROMPT,
@@ -24,8 +24,6 @@ from judges.autojudge.prompts import (
 from judges.base import BaseJudge, Judgment
 from judges._client import get_completion
 
-
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -127,7 +125,7 @@ class AutoJudge(BaseJudge):
 
     def generate_structured_feedback(self, task: str, feedback: str) -> str:
         try:
-            logger.info(f"generating structured feedback using {self.model}")
+            logger.info(f"generating structured feedback using {self.model}...")
 
             formatted_prompt = STRUCTURE_FEEDBACK_USER_PROMPT.format(
                 task=task,
@@ -171,7 +169,7 @@ class AutoJudge(BaseJudge):
         Generates grading notes using the LLM based on structured feedback.
         """
         try:
-            logger.info(f"generating grading notes using {self.model}")
+            logger.info(f"generating grading notes using {self.model}...")
 
             formatted_prompt = GENERATE_RUBRIC_USER_PROMPT.format(
                 feedback=structured_feedback,
@@ -268,7 +266,7 @@ class AutoJudge(BaseJudge):
         """
         Extracts classification results from the LLM evaluations.
         """
-        logger.info("extracting classification results from LLM evaluations.")
+        logger.info("extracting classification results from LLM evaluations...")
         try:
             generated_grading_note_classifications: List[int] = []
             for eval_result in evaluations:
@@ -288,12 +286,12 @@ class AutoJudge(BaseJudge):
         """
         Computes evaluation metrics comparing model predictions with human labels.
         """
-        logger.info("computing evaluation metrics.")
+        logger.info("computing evaluation metrics...")
         try:
             true_labels = [int(row["label"]) for row in data]
 
-            logger.info(f"true labels: {true_labels}")
-            logger.info(f"predicted labels: {classifications}")
+            logger.debug(f"true labels: {true_labels}")
+            logger.debug(f"predicted labels: {classifications}")
 
             classes = sorted(list(set(true_labels).union(set(classifications))))
             # Call confusion_matrix function as cm_func to avoid overshadowing
@@ -319,7 +317,7 @@ class AutoJudge(BaseJudge):
                     true_labels, classifications, confusion_matrix=cm, classes=classes
                 ),
             }
-            logger.info(f"computed metrics: {metrics}")
+            logger.debug(f"computed metrics: {metrics}")
         except Exception as e:
             logger.error(f"error computing metrics: {e}")
             raise
@@ -397,31 +395,28 @@ class AutoJudge(BaseJudge):
             classifications=classifications,
         )
 
-        logger.info("Sample LLM outputs:")
+        logger.debug("sample llm outputs:")
         for eval_result in evaluations[:5]:
-            logger.info(eval_result)
+            logger.debug(eval_result)
 
-        logger.info("Sample classification results (grading note):")
+        logger.debug("sample classification results (grading note):")
         classification_counts = {}
         for classification_val in classifications:
             classification_counts[classification_val] = (
                 classification_counts.get(classification_val, 0) + 1
             )
 
-        logger.info(classification_counts)
+        logger.debug(classification_counts)
 
-        logger.info("Sample classification results (human labels):")
+        logger.debug("sample classification results (human labels):")
         human_labels = {}
         for row in data[:10]:
             label = int(row["label"])
             human_labels[label] = human_labels.get(label, 0) + 1
 
-        logger.info(human_labels)
+        logger.debug(human_labels)
 
-        logger.info("Final evaluation metrics:")
-        for metric, value in metrics.items():
-            logger.info(f"{metric}: {value}")
-
+        logger.info(f"final evaluation metrics: {metrics}")
         # Assign the grading_notes as the user_prompt to the instance for future judging
         autojudge.user_prompt = grading_notes
         return autojudge
