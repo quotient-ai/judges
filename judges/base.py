@@ -5,12 +5,9 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
-from openai import OpenAI
-
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
 from judges._client import get_completion
-
 
 if TYPE_CHECKING:
     import pydantic

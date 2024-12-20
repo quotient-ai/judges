@@ -8,8 +8,6 @@ from typing import Optional, Union, List, Dict
 
 from pydantic import BaseModel
 
-
-
 from judges.autojudge.metrics import (
     confusion_matrix as cm_func,
     calculate_accuracy,
@@ -49,8 +47,7 @@ class AutoJudge(BaseJudge):
 
     def __init__(
         self,
-        # model: str = "gpt-4-turbo-2024-04-09",
-        model: str = "gpt-4-turbo",
+        model: str = "gpt-4-turbo-2024-04-09",
         max_workers: int = 2,
         system_prompt: Optional[str] = '',
         user_prompt: Optional[str] = None,
@@ -229,9 +226,9 @@ class AutoJudge(BaseJudge):
                 formatted_grading_note = grading_notes.format(input=input, output=output)
 
                 messages = [
-                {"role": "system", "content": ''},
-                {"role": "user", "content": formatted_grading_note},
-            ]
+                    {"role": "system", "content": ''},
+                    {"role": "user", "content": formatted_grading_note},
+                ]
                 response = get_completion(
                     messages=messages,
                     model=self.model,

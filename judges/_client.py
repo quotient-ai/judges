@@ -31,26 +31,70 @@ def get_completion(
     temperature: float,
     max_tokens: int,
     seed: int,
+    response_format: dict = None,
     response_model: BaseModel = None,
 ):
     client = llm_client()
 
-    if client.__class__.__name__ == "OpenAI":
-        # TODO: autojudge uses the instructor client, but the rest of the judges do not.
-        # FIX THIS.
-        client = instructor.from_openai(client)
-    elif hasattr(client, "__name__") and client.__name__ == "litellm":
-        client = instructor.from_litellm(client.completion)
+    if response_format and response_model:
+        raise Exception("response_format and response_model cannot both be provided. please provide only one.")
+    elif response_format and response_model is None:
+        # if we get a response_format, we'll just want to use the regular JSON mode for the clients
+        # without instructor
+        if client.__class__.__name__ == "OpenAI":
+            response = client.chat.completions.create(
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=messages,
+                seed=seed,
+                response_format=response_format,
+            )
+        elif hasattr(client, "__name__") and client.__name__ == "litellm":
+            response = client.completion(
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=messages,
+                seed=seed,
+                response_format=response_format,
+            )
+    elif response_model and response_format is None:
+        if client.__class__.__name__ == "OpenAI":
+            # TODO: autojudge uses the instructor client, but the rest of the judges do not.
+            # FIX THIS.
+            client = instructor.from_openai(client)
+        elif hasattr(client, "__name__") and client.__name__ == "litellm":
+            client = instructor.from_litellm(client.completion)
+        else:
+            raise Exception("unknown client. please create an issue on GitHub if you see this message.")
+            
+        response = client.chat.completions.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=messages,
+            seed=seed,
+            response_model=response_model,
+        ) 
     else:
-        raise Exception("unknown client. please create an issue on GitHub if you see this message.")
-    
-    response = client.chat.completions.create(
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        messages=messages,
-        seed=seed,
-        response_model=response_model,
-    )
+        if client.__class__.__name__ == "OpenAI":
+            response = client.chat.completions.create(
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=messages,
+                seed=seed,
+                response_format=response_format,
+            )
+        elif hasattr(client, "__name__") and client.__name__ == "litellm":
+            response = client.completion(
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=messages,
+                seed=seed,
+                response_format=response_format,
+            )
 
     return response
