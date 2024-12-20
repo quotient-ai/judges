@@ -1,18 +1,8 @@
 # `autojudge`: Personalized Evaluation for AI Outputs  
 
 ## Overview  
-`autojudge` is a novel extension to the **judges** library, designed to simplify and enhance the evaluation of AI-generated outputs. By leveraging labeled datasets with user-provided feedback, `autojudge` creates custom, task-specific evaluation systems tailored to your unique needs. This process is fully automated and scalable, offering a seamless way to evaluate AI models for accuracy, relevance, and clarity.  
+`autojudge` is an extension to the **judges** library: given a labeled datasets with user-provided feedback, `autojudge` creates custom, task-specific evaluation systems. 
 
-`autojudge` eliminates the "one-size-fits-all" problem of generic evaluators, enabling you to generate precise, feedback-informed rubrics and personalized judge models. Whether you're working on chatbots, QA systems, or other LLM-based applications, `autojudge` bridges the gap between generic evaluations and nuanced, human-aligned assessments.
-
----
-
-## Benefits  
-
-1. **Custom, Feedback-Informed Evaluators**: `autojudge` combines user feedback with LLM capabilities to generate task-specific rubrics that align with real-world evaluation criteria.  
-2. **Scalable and Efficient**: `autojudge` performs evaluations at scale with minimal labeled data, significantly reducing manual overhead.  
-3. **Flexible and Adaptable**: Tailored evaluation systems adapt to domain-specific needs, ensuring consistency across datasets and use cases.  
-4. **Insightful Metrics**: Measure performance using comprehensive evaluation metrics like accuracy, F1 scores, and Cohen’s kappa to align with human judgments.  
 
 ---
 
@@ -21,11 +11,11 @@
 ### Installation  
 `autojudge` is included in the **judges** library. Install it using:  
 ```bash
-pip install judges
+pip install judges[auto]
 ```  
 
 ### Preparing Your Dataset  
-Your dataset should be a CSV file with the following columns:  
+Your dataset should be a CSV file with the following columns or a list of dictionaries:  
 - **`input`**: The input or question being evaluated.  
 - **`output`**: The AI's response.  
 - **`label`**: Ground-truth labels (e.g., `1` for correct, `0` for incorrect).  
@@ -45,7 +35,7 @@ Example:
 Provide a labeled dataset and describe the evaluation task.  
 
 ```python
-from judges import autojudge
+from judges.classifiers.auto import autojudge
 
 # Path to your dataset
 dataset_path = "./data/synthetic_travel_qa.csv"
