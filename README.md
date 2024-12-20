@@ -162,9 +162,9 @@ print(verdict.score)
 
 ### Use `AutoJudge` to create a custom LLM judge
 
-`autojudge` is an extension to the **judges** library -- given a labeled dataset with feedback, `autojudge` creates custom, task-specific LLM judges.
+`autojudge` is an extension to the **judges** library that builds on our [previous work](https://www.quotientai.co/post/subject-matter-expert-language-liaison-smell-a-framework-for-aligning-llm-evaluators-to-human-feedback) aligning judges to human feedback -- given a labeled dataset with feedback, `autojudge` creates custom, task-specific LLM judges.
 
-`autojudge` is included in the **judges** library. Install it using:  
+Install it using:  
 
 ```bash
 pip install judges[auto]
@@ -176,7 +176,7 @@ Your dataset can be either a list of dictionaries or path to a csv file with the
 - **`input`**: The input provided to your model
 - **`output`**: The model's response
 - **`label`**: `1` for correct, `0` for incorrect  
-- **`feedback`**: Feedback explaining why the response is correct or incorrect 
+- **`feedback`**: Feedback explaining why the response is correct or incorrect
 
 Example:  
 
