@@ -36,10 +36,13 @@ class Judgment:
         """
         Post-initialization to normalize score values for consistency.
         """
-        if not isinstance(self.score, bool) and self.score.lower() in ["yes", "true", 1, "1", "good"]:
-            self.score = True
-        elif not isinstance(self.score, bool) and self.score.lower() in ["no", "false", 0, "0", "bad"]:
-            self.score = False
+        if isinstance(self.score, str):
+            if self.score.lower() in ["yes", "true", "1", "good"]:
+                self.score = True
+            elif self.score.lower() in ["no", "false", "0", "bad"]:
+                self.score = False
+        elif isinstance(self.score, int):
+            self.score = bool(self.score)
 
 
 @dataclass
