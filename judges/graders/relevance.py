@@ -55,7 +55,7 @@ class ReliableCIRelevance(BaseJudge):
         [3] Perfectly relevant: The passage is dedicated to the query and contains the exact answer.
         
         Query: {input}
-        Passage: {context}
+        Passage: {output}
         Relevance:
         """)
         reasoning, score = self._judge(
