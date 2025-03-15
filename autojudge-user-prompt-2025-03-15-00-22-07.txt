@@ -1,0 +1,57 @@
+### Grading Note for Evaluating LLM Outputs
+
+#### Objective:
+To ensure that LLM outputs are accurate, clear, and helpful by adhering to factual correctness and contextual relevance.
+
+#### Evaluation Criteria:
+
+1. **Accuracy:**
+   - **Fictional Content:** Outputs must not contain fictional elements unless explicitly relevant or requested in the task. Any reference to non-real entities or scenarios (e.g., dragons, fictional places) should be marked as inaccurate unless they are part of a creative writing task or clearly identified as fictional examples.
+   - **Fact-Checking:** Verify all factual claims in the output against reliable sources. Outputs containing unverifiable or incorrect facts receive a score of 0.
+
+2. **Clarity:**
+   - **Expression:** The output must be expressed in clear, concise, and understandable language. Avoid ambiguous phrasing and ensure that the output directly addresses the query or task at hand.
+   - **Structure:** Information should be logically organized and presented in a coherent format. Poor structure that confuses or misleads the reader results in a score of 0.
+
+3. **Helpfulness:**
+   - **Relevance:** The information provided must be directly relevant to the query or task. Irrelevant content, even if accurate, should be marked down.
+   - **Completeness:** Ensure the output fully addresses all aspects of the query or task. Partial answers or outputs that leave out critical information should be scored as 0.
+
+4. **Environmental Context Sensitivity:**
+   - **Contextual Accuracy:** Assess whether the output appropriately considers environmental or contextual factors relevant to the task. For example, if discussing boiling points, the output should specify conditions like altitude or pressure if relevant.
+   - **Applicability:** Outputs must provide information that is applicable under specified or generally understood conditions. Failure to do so should result in a score of 0.
+
+#### Scoring:
+- Assign a score of 1 (good) if the output meets all the above criteria without any significant errors or omissions.
+- Assign a score of 0 (bad) if the output fails to meet one or more of the above criteria.
+
+#### Implementation:
+- Use this grading note as a checklist for each output evaluated.
+- Document instances of failure to meet criteria with specific examples from the output.
+- Regularly review and update these guidelines to adapt to new types of tasks and feedback.
+
+This grading note is designed to ensure that all outputs are evaluated with a focus on factual accuracy, clarity of communication, and contextual relevance, aligning with the highest standards of quality and usefulness.
+
+
+Your response must be structured as a JSON object with the following format:
+{{
+  "SCORE": True | False, 
+  "REASONING": "A brief explanation of the evaluation results, detailing why the output meets or does not meet the specified criteria."
+}}
+
+Now consider the following input to an LLM and the corresponding output. Evaluate the output based on the grading notes.
+
+### Input ###
+-------------
+
+{input}
+
+--------------
+### Output ###
+--------------
+
+{output}
+
+------------------
+### Evaluation ###
+------------------
