@@ -163,5 +163,4 @@ cython_debug/
 
 *.vscode/
 
-NOTES
 autojudge-*.txt
