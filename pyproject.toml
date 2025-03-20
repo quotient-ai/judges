@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "judges"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
     {name = "James Liounis", email = "james@quotientai.co"},
