@@ -80,7 +80,7 @@ The library also provides an interface to combine multiple judges through the `J
 
 
 ### Send data to an LLM
-Next, if you'd like to use this package, you can follow the `example.py` below:
+Next, if you'd like to use this package, you can follow the examples in the `examples` directory, or follow the code below:
 
 ```python
 from openai import OpenAI
@@ -154,7 +154,7 @@ jury = Jury(judges=[poll, raft], voting_method="average")
 
 verdict = jury.vote(
     input=input,
-    output=completion,
+    output=output,
     expected=expected,
 )
 print(verdict.score)
