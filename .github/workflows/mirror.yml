@@ -1,0 +1,110 @@
+name: Sync to GitLab
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - prod
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Run at midnight UTC daily
+
+jobs:
+  sync-to-gitlab:
+    if: github.event.pull_request.merged == true || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Quotient Bot"
+          git config --global user.email "eng@quotientai.co"
+
+      - name: Fetch and check out branches from GitHub
+        run: |
+          # Fetch all branches from GitHub
+          git fetch origin
+          
+          # Check if main branch exists
+          if git ls-remote --heads origin main | grep -q main; then
+            echo "Main branch exists on GitHub"
+            # Check if main branch exists locally
+            if ! git show-ref --verify --quiet refs/heads/main; then
+              echo "Creating local main branch"
+              git checkout -b main origin/main
+            else
+              echo "Main branch already exists locally"
+            fi
+          else
+            echo "Main branch does not exist on GitHub"
+          fi
+          
+          # Check if prod branch exists
+          if git ls-remote --heads origin prod | grep -q prod; then
+            echo "Prod branch exists on GitHub"
+            # Check if prod branch exists locally
+            if ! git show-ref --verify --quiet refs/heads/prod; then
+              echo "Creating local prod branch"
+              git checkout -b prod origin/prod
+            else
+              echo "Prod branch already exists locally"
+            fi
+            # Set a flag to indicate prod branch exists
+            echo "PROD_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Prod branch does not exist on GitHub"
+            echo "PROD_EXISTS=false" >> $GITHUB_ENV
+          fi
+          
+          # Debug information
+          echo "Current branch: $(git branch --show-current)"
+          echo "All branches:"
+          git branch -a
+
+      - name: Set GitLab repository URL
+        run: |
+          # Extract repository name from GitHub repository
+          REPO_NAME=$(echo ${{ github.repository }} | cut -d'/' -f2)
+          # Construct GitLab repository URL using the base URL and repository name
+          # Include the PAT in the URL for authentication
+          echo "GITLAB_REPO_URL=https://quotientai-bot:${{ secrets.GH_BOT_GITLAB_TOKEN }}@$(echo ${{ secrets.GITLAB_BASE_URL }} | sed 's|https://||')/$REPO_NAME.git" >> $GITHUB_ENV
+          echo "Using GitLab repository URL: ${{ secrets.GITLAB_BASE_URL }}/$REPO_NAME.git"
+
+      - name: Add GitLab remote
+        run: |
+          git remote add gitlab $GITLAB_REPO_URL
+
+      - name: Push to GitLab
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # For scheduled runs, push all branches
+            # Check if main branch exists locally
+            if git show-ref --verify --quiet refs/heads/main; then
+              echo "Main branch exists locally, pushing to GitLab"
+              git push gitlab main:main
+            else
+              echo "Main branch does not exist locally, skipping"
+            fi
+            
+            # Only push prod branch if it exists locally and the PROD_EXISTS flag is true
+            if [ "$PROD_EXISTS" == "true" ] && git show-ref --verify --quiet refs/heads/prod; then
+              echo "Prod branch exists locally, pushing to GitLab"
+              git push gitlab prod:prod
+            else
+              echo "Prod branch does not exist locally or is not a branch in this repo, skipping"
+            fi
+          else
+            # For PR merges, push only the merged branch
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+            if git show-ref --verify --quiet refs/heads/$BRANCH_NAME; then
+              echo "Branch $BRANCH_NAME exists locally, pushing to GitLab"
+              git push gitlab $BRANCH_NAME:$BRANCH_NAME
+            else
+              echo "Branch $BRANCH_NAME does not exist locally, skipping"
+            fi
+          fi 
