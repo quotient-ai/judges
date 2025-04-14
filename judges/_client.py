@@ -5,20 +5,34 @@ import openai
 
 from pydantic import BaseModel
 from tenacity import retry, wait_random_exponential, stop_after_attempt
+from judges.config import get_config
 
 openai._utils._logs.logger.setLevel(logging.WARNING)
 openai._utils._logs.httpx_logger.setLevel(logging.WARNING)
 
 
 def llm_client():
-    try:
-        import litellm
-    except ImportError:
-        # fallback to openai
-        client = openai.OpenAI()
+    config = get_config()
+    client = openai.OpenAI(
+        api_key=config.api_key,
+        base_url=config.base_url,
+    )
+    
+    if config.client == "openai":
         return client
+    elif config.client == "litellm":
+        try:
+            import litellm
+            client = litellm
+        except ImportError:
+            # fallback to openai
+            config = get_config()
+            client = openai.OpenAI(
+                api_key=config.api_key,
+                base_url=config.base_url,
+            )
     else:
-        return litellm
+        raise Exception("unknown client. please create an issue on GitHub if you see this message.")
 
 
 @retry(
