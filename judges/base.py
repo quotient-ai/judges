@@ -134,16 +134,45 @@ class BaseJudge:
         """
         messages = self._build_messages(user_prompt, system_prompt)
 
-        completion = get_completion(
-            model=self.model,
-            messages=messages,
-            max_tokens=None,
-            temperature=1,
-            seed=None,
-            response_model=None,
-            response_format={"type": "json_object"}
-        )
-        data = json.loads(completion.choices[0].message.content)
+        if 'ollama' in self.model.lower():
+            completion = get_completion(
+                model=self.model,
+                messages=messages,
+                max_tokens=None,
+                temperature=1,
+                seed=None,
+            )
+            import re
+            import json
+
+            def extract_json(input_string):
+                # Regex to extract first complete JSON object
+                json_regex = r'\{[^}]*\}'
+                
+                match = re.search(json_regex, input_string)
+                if match:
+                    json_string = match.group(0)
+                    try:
+                        return json.loads(json_string)
+                    except json.JSONDecodeError:
+                        return json_string
+                
+                return None
+                
+            content = completion.choices[0].message.content
+            data = extract_json(content)
+        else:
+            completion = get_completion(
+                model=self.model,
+                messages=messages,
+                max_tokens=None,
+                temperature=1,
+                seed=None,
+                response_model=None,
+                response_format={"type": "json_object"}
+            )
+            data = json.loads(completion.choices[0].message.content)
+        
         reasoning = data["REASONING"]
         score = data["SCORE"]
         return reasoning, score
