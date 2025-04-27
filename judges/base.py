@@ -135,6 +135,8 @@ class BaseJudge:
         messages = self._build_messages(user_prompt, system_prompt)
 
         if 'ollama' in self.model.lower():
+            # XXX: we have to special case ollama because it doesn't support response_model 
+            # and has a bug with JSON mode https://github.com/BerriAI/litellm/issues/7355
             completion = get_completion(
                 model=self.model,
                 messages=messages,
