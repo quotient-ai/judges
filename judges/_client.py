@@ -24,6 +24,7 @@ def llm_client():
         try:
             import litellm
             client = litellm
+            return client
         except ImportError:
             # fallback to openai
             config = get_config()
@@ -31,6 +32,7 @@ def llm_client():
                 api_key=config.api_key,
                 base_url=config.base_url,
             )
+            return client
     else:
         raise Exception("unknown client. please create an issue on GitHub if you see this message.")
 
