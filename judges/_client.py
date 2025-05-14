@@ -72,6 +72,9 @@ def get_completion(
                 response_format=response_format,
             )
         elif hasattr(client, "__name__") and client.__name__ == "litellm":
+            if 'completion' not in dir(client):
+                raise Exception("litellm.completion not found. please install 'judges[litellm]'")
+
             response = client.completion(
                 model=model,
                 max_tokens=max_tokens,
