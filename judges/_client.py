@@ -1,6 +1,5 @@
 import logging
 
-import instructor
 import openai
 
 from pydantic import BaseModel
@@ -40,13 +39,20 @@ def get_completion(
         raise Exception("response_format and response_model cannot both be provided. please provide only one.")
     
     if response_model and response_format is None:
+        try:
+            import instructor
+        except ImportError:
+            raise ImportError(
+                "The 'instructor' package is required for autojudge usage. "
+                "Install it with: pip install judges[auto]"
+            )
         if client.__class__.__name__ == "OpenAI":
             client = instructor.from_openai(client)
         elif hasattr(client, "__name__") and client.__name__ == "litellm":
             client = instructor.from_litellm(client.completion)
         else:
             raise Exception("unknown client. please create an issue on GitHub if you see this message.")
-        
+
         response = client.chat.completions.create(
             model=model,
             max_tokens=max_tokens,
