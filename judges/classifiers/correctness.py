@@ -117,9 +117,9 @@ class PollZeroShotCorrectness(BaseJudge):
             f"""
         You will be given a Question, a Provided Answer and a Reference Answer. Judge whether the Provided Answer is correct by comparing it to the Reference Answer. Differently formatted dates, people with missing middle names, and alternative spellings should all be considered the same. If the Provided Answer is correct say exactly "True", otherwise say "False".
 
-        Question: {{input}}
-        Provided Answer: {{output}}
-        Reference Answer:{{expected}}
+        Question: {input}
+        Provided Answer: {output}
+        Reference Answer:{expected}
         Correct:
         """
         )
