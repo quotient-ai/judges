@@ -1,23 +1,15 @@
-import json
-import logging
-
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
+
+import instructor
+
+from pydantic import BaseModel
 
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
-from judges._client import get_completion
 
-if TYPE_CHECKING:
-    import pydantic
-
-litellm_logger = logging.getLogger("LiteLLM")
-litellm_logger.disabled = True
-
-
-@dataclass
-class Judgment:
+class Judgment(BaseModel):
     """
     A dataclass that represents a judgment.
 
@@ -27,26 +19,24 @@ class Judgment:
         The score assigned by the judge, indicating the evaluation result.
     reasoning: str
         The reasoning provided by the judge for the assigned score.
+    score_type: str
+        The type of score being used (e.g. 'boolean', 'numerical', 'likert')
     """
 
     score: bool | int | str
     reasoning: str
+    score_type: str = "boolean"
 
     def __post_init__(self):
-        """
-        Post-initialization to normalize score values for consistency.
-        """
-        if isinstance(self.score, str):
-            if self.score.lower() in ["yes", "true", "1", "good"]:
-                self.score = True
-            elif self.score.lower() in ["no", "false", "0", "bad"]:
-                self.score = False
-        elif isinstance(self.score, int):
-            self.score = bool(self.score)
+        if self.score_type == "boolean":
+            if isinstance(self.score, str):
+                if self.score.lower() in ["yes", "true", "1", "good"]:
+                    self.score = True
+                elif self.score.lower() in ["no", "false", "0", "bad"]:
+                    self.score = False
 
 
-@dataclass
-class Verdict:
+class Verdict(BaseModel):
     """
     A dataclass that represents a jury's verdict.
 
@@ -134,19 +124,16 @@ class BaseJudge:
         """
         messages = self._build_messages(user_prompt, system_prompt)
 
-        completion = get_completion(
-            model=self.model,
+        client = instructor.from_provider(self.model)
+
+        judgment = client.chat.completions.create(
             messages=messages,
             max_tokens=None,
-            temperature=1,
+            temperature=0.0,
             seed=None,
-            response_model=None,
-            response_format={"type": "json_object"}
+            response_model=Judgment,
         )
-        data = json.loads(completion.choices[0].message.content)
-        reasoning = data["REASONING"]
-        score = data["SCORE"]
-        return reasoning, score
+        return judgment.reasoning, judgment.score
 
     @abstractmethod
     def judge(
@@ -246,5 +233,13 @@ class Jury:
             judgments.append(judgment)
 
         scores = [judgment.score for judgment in judgments]
-        score = self.voting_method(scores=scores)
+        score_types = [judgment.score_type for judgment in judgments]
+        
+        if self.voting_method.__name__ == "weighted_average_voting":
+            # For weighted average, we need to provide weights
+            weights = [1.0] * len(scores)  # Default equal weights
+            score = self.voting_method(scores=scores, weights=weights, score_types=score_types)
+        else:
+            score = self.voting_method(scores=scores, score_types=score_types)
+            
         return Verdict(score=score, judgments=judgments)

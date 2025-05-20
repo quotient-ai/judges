@@ -4,18 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "judges"
+<<<<<<< HEAD
 version = "0.0.12"
+=======
+version = "0.1.0"
+>>>>>>> bbec695 (Use instructor as the only client)
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
 ]
 description = "A small library of research-backed LLM judges"
 dependencies = [
-    "openai >= 1.57.4",
+    "instructor>=1.8.2",
+    "pydantic>=2.10.3",
 ]
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["ai", "large language models", "llm-judge", "evaluation", "evals"]
-license = {text = "MIT"}
+license = {text = "Apache 2.0"}
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
@@ -25,14 +30,6 @@ classifiers = [
 judges = "judges.cli.entrypoint:app"
 
 [project.optional-dependencies]
-litellm = [
-    "litellm>=1.55.3",
-]
-auto = [
-    "instructor==1.7.0",
-    "pydantic==2.10.3",
-    "tenacity==9.0.0",
-]
 dev = [
     "openai-responses>=0.11.2",
 ]
