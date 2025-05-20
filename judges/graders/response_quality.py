@@ -63,9 +63,9 @@ class MTBenchChatBotResponseQuality(BaseJudge):
             possible. After providing your explanation, please rate the response on a scale of 1 to 10.
             [Question]
             {input}
-            [The Start of Assistant’s Answer]
+            [The Start of Assistant's Answer]
             {output}
-            [The End of Assistant’s Answer]
+            [The End of Assistant's Answer]
             """
         )
 
@@ -74,5 +74,5 @@ class MTBenchChatBotResponseQuality(BaseJudge):
             system_prompt=system_prompt,
         )
 
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
 
