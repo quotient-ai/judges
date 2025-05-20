@@ -36,8 +36,8 @@ output = client.chat.completions.create(
 from judges import Jury
 from judges.classifiers.correctness import PollMultihopCorrectness, RAFTCorrectness
 
-poll = PollMultihopCorrectness(model='gpt-4o')
-raft = RAFTCorrectness(model='gpt-4o-mini')
+poll = PollMultihopCorrectness(model='openai/gpt-4o')
+raft = RAFTCorrectness(model='openai/gpt-4o-mini')
 
 jury = Jury(judges=[poll, raft], voting_method="average")
 
@@ -47,4 +47,5 @@ verdict = jury.vote(
     expected=expected,
 )
 print(verdict.score)
+print(verdict.judgments)
 

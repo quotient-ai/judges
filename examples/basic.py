@@ -37,7 +37,7 @@ output = client.chat.completions.create(
 
 # use the correctness classifier to determine if the first model
 # answered correctly
-correctness = PollMultihopCorrectness(model='gpt-4o-mini')
+correctness = PollMultihopCorrectness(model='openai/gpt-4o-mini')
 
 judgment = correctness.judge(
     input=input,
