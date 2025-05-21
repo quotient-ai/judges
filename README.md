@@ -10,14 +10,14 @@
      - [Classifier Judges](#classifier-judges)
    - [Combining Judges](#combining-judges)
      - [Jury Object](#jury-object)
-4. [Usage](#usage)
+4. [Quickstart with CLI](#cli)
+5. [Usage](#usage)
    - [Pick a model](#pick-a-model)
    - [Send data to an LLM](#send-data-to-an-llm)
    - [Use a `judges` classifier LLM as an evaluator model](#use-a-judges-classifier-llm-as-an-evaluator-model)
    - [Use a `Jury` for averaging and diversification](#use-a-jury-for-averaging-and-diversification)
    - [Use `AutoJudge` to create a custom LLM judge](#use-autojudge-to-create-a-custom-llm-judge)
-   - [CLI](#cli)
-5. [Appendix of Judges](#appendix)
+6. [Appendix of Judges](#appendix)
    - [Classifiers](#classifiers) 
    - [Grader](#graders) 
 
@@ -67,9 +67,7 @@ The library also provides an interface to combine multiple judges through the `J
 
 - `.vote()`: Combines the judgments of multiple judges and produces a `Verdict`.
 
-## Usage
-
-### CLI
+## CLI
 
 We provide a command-line interface for evaluating model outputs using various judges. The CLI supports both single and batch evaluations.
 
@@ -111,6 +109,9 @@ Example JSON input:
 
 The CLI will return a JSON object containing the original input, output, expected values, judgment score, and reasoning for each test case. It will
 either be saved in the output file or printed to std if no output file is specified.
+
+
+## Usage
 
 ### Pick a model
 
