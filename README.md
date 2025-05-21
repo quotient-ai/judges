@@ -139,7 +139,7 @@ Fig was a small, scruffy dog with a big personality. He lived in a quiet little 
 
 One day, Fig discovered a mysterious trail of footprints leading into the woods. Curiosity got the best of him, and he followed them deep into the trees. As he trotted along, he heard rustling in the bushes and suddenly, out popped a rabbit! The rabbit looked at Fig with wide eyes and darted off.
 
-But instead of chasing it, Fig barked in excitement, as if saying, "Nice to meet you!" The rabbit stopped, surprised, and came back. They sat together for a moment, sharing the calm of the woods.
+But instead of chasing it, Fig barked in excitement, as if saying, “Nice to meet you!” The rabbit stopped, surprised, and came back. They sat together for a moment, sharing the calm of the woods.
 
 From that day on, Fig had a new friend. Every afternoon, the two of them would meet in the same spot, enjoying the quiet companionship of an unlikely friendship. Fig's adventurous heart had found a little peace in the simple joy of being with his new friend.
 """
