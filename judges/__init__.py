@@ -1,5 +1,6 @@
-import enum
 from judges.base import Jury
+from judges.classifiers import *
+from judges.graders import *
 from judges.classifiers.correctness import (
     PollKiltHotpotCorrectness, PollKiltNQCorrectness,
     PollMultihopCorrectness, PollZeroShotCorrectness, RAFTCorrectness
@@ -22,6 +23,7 @@ from judges.graders.query_quality import MagpieQueryQuality
 from judges.graders.relevance import ReliableCIRelevance
 from judges.graders.response_quality import MTBenchChatBotResponseQuality
 from judges.graders.refusal_detection import ORBenchRefusalDetection
+import enum
 
 class choices_judges(enum.Enum):
     # Factual Correctness
