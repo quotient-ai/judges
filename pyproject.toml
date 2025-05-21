@@ -4,10 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "judges"
-version = "0.0.10"
+version = "0.0.11"
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
-    {name = "James Liounis", email = "james@quotientai.co"},
 ]
 description = "A small library of research-backed LLM judges"
 dependencies = [
