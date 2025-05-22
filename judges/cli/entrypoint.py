@@ -3,22 +3,32 @@
 import typer
 import json
 import os
-from typing import Dict, List
+from typing import List, Optional
 from judges import choices_judges, get_judge_by_name
-
+from pydantic import BaseModel, TypeAdapter, ConfigDict
 app = typer.Typer()
 
+class Sample(BaseModel):
+    input: str
+    output: str
+    expected: Optional[str]
 
-def parse_json_dict(json_dict: str) -> List[Dict[str, str]]:
+    model_config = ConfigDict(strict=True)
+
+class Dataset(BaseModel):
+    samples: List[Sample]
+
+
+def parse_json_dict(json_dict: str) -> Dataset:
     """
-    Parse a JSON dictionary or path to a JSON file into a list of dictionaries.
-    Each dictionary must have 'input', 'output', and 'expected' keys.
+    Parse a JSON dictionary or path to a JSON file into a Dataset object.
+    Each sample must have 'input', 'output', and 'expected' keys.
 
     Args:
         json_dict: Either a JSON string or a path to a JSON file
 
     Returns:
-        List of dictionaries with 'input', 'output', and 'expected' keys
+        Dataset object containing Sample objects with 'input', 'output', and 'expected' fields
 
     Raises:
         ValueError: If the JSON is invalid or missing required keys
@@ -41,26 +51,17 @@ def parse_json_dict(json_dict: str) -> List[Dict[str, str]]:
         data = [data]
 
     # Validate format
-    required_keys = {"input", "output", "expected"}
-    for i, entry in enumerate(data):
-        if not isinstance(entry, dict):
-            raise ValueError(f"Entry {i} is not a dictionary")
+    validated_entries = TypeAdapter(List[Sample]).validate_python(data)
+    dataset = Dataset(samples=validated_entries)
 
-        # Check for missing keys
-        missing_keys = required_keys - set(entry.keys())
-        if missing_keys:
-            raise ValueError(f"Entry {i} is missing required keys: {missing_keys}")
-
-        # Check for empty strings
-        for key in required_keys:
-            if entry[key] == "":
-                print(f"Warning: Empty string found for key '{key}' in entry {i}")
-
-    return data
+    return dataset
 
 
 @app.command()
-def main(judge: choices_judges, model_name: str, json_dict: str, out: str = None):
+def main(judge: choices_judges,
+         model: str = typer.Option(..., "--model", "-m", help="The name of the model to use (e.g., 'gpt-4', '<litellm_provider>/<model_name>')"),
+         input_json: str = typer.Option(..., "--input", "-i", help="Either a JSON string or path to a JSON file containing test cases"),
+         output_json: str = typer.Option(None, "--output", "-o", help="Path to save the results (if not provided, prints to stdout)")):
     """
     Evaluate model outputs using specified judges and models.
 
@@ -71,8 +72,8 @@ def main(judge: choices_judges, model_name: str, json_dict: str, out: str = None
     Args:
         judge (choices_judges): The type of judge to use for evaluation (e.g., CorrectnessPollKiltHotpot,
             EmotionQueenImplicitEmotionRecognition, etc.)
-        model_name (str): The name of the model to use for the judge (e.g., "gpt-4", "claude-3-opus", etc.)
-        json_dict (str): Either a JSON string or path to a JSON file containing the test cases.
+        model (str): The name of the model to use for the judge (e.g., "gpt-4", "claude-3-opus", etc.)
+        input_json (str): Either a JSON string or path to a JSON file containing the test cases.
             Each test case must have 'input', 'output', and 'expected' keys.
             Example JSON format:
             {
@@ -93,51 +94,51 @@ def main(judge: choices_judges, model_name: str, json_dict: str, out: str = None
                     "expected": "The capital of Germany is Berlin."
                 }
             ]
-        out (str): The path to the output file to save the results.
+        output_json (str): The path to the output file to save the results.
             If not provided, the results will be printed to stdout.
 
     Returns:
-        None: Prints the judgement and reasoning for each test case to stdout.
+        None: Prints the judgment and reasoning for each test case to stdout.
 
     Raises:
         ValueError: If the JSON input is invalid or missing required keys.
         Exception: If there's an error processing any individual test case.
     """
     judge_constructor = get_judge_by_name(judge)
-    judge = judge_constructor(model_name)
+    judge = judge_constructor(model)
     results = []
 
     # Parse the JSON input
     try:
-        entries = parse_json_dict(json_dict)
+        entries = parse_json_dict(input_json)
     except ValueError as e:
         print(f"Error parsing JSON: {e}")
         return
 
     # Process each entry
-    for i, entry in enumerate(entries):
+    for i, entry in enumerate(entries.samples):
         try:
-            judgement = judge.judge(
-                input=entry["input"],
-                output=entry["output"],
-                expected=entry["expected"]
+            judgment = judge.judge(
+                input=entry.input,
+                output=entry.output,
+                expected=entry.expected
             )
             results.append(
                 {
-                    "input": entry["input"],
-                    "output": entry["output"],
-                    "expected": entry["expected"],
-                    "judgement": judgement.score,
-                    "reasoning": judgement.reasoning,
+                    "input": entry.input,
+                    "output": entry.output,
+                    "expected": entry.expected,
+                    "judgment": judgment.score,
+                    "reasoning": judgment.reasoning,
                 }
             )
         except Exception as e:
             print(f"Error processing entry {i}: {e}")
 
-    if out:
-        with open(out, "w") as f:
+    if output_json:
+        with open(output_json, "w") as f:
             json.dump(results, f, indent=4)
-        print(f"Results saved to {out}")
+        print(f"Results saved to {output_json}")
     else:
         print(json.dumps(results, indent=4))
 

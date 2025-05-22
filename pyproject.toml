@@ -22,6 +22,8 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
 ]
 
+[project.scripts]
+judges = "judges.cli.entrypoint:app"
 
 [project.optional-dependencies]
 litellm = [
