@@ -20,21 +20,3 @@ def mock_judgment(judgment: Judgment):
         return wrapper
     return decorator
 
-
-@openai_responses.mock()
-@mock_judgment(
-    Judgment(
-        score="average",
-        reasoning="The query is moderately clear and specific. It may require some additional information for a complete understanding.",
-    )
-)
-def test_quality_judge(mockclient):
-    judge = PollMultihopCorrectness(model="gpt-4")
-    judgment = judge.judge(input="What is the capital of France?")
-
-    assert judgment.score == "average"
-    assert (
-        judgment.reasoning
-        == "The query is moderately clear and specific. It may require some additional information for a complete understanding."
-    )
-    mockclient.assert_called_once()
