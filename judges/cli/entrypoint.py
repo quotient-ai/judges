@@ -59,7 +59,7 @@ def parse_json_dict(json_dict: str) -> Dataset:
 
 @app.command()
 def main(judge: choices_judges,
-         model: str = typer.Option(..., "--model", "-m", help="The name of the model to use (e.g., 'gpt-4', '<litellm_provider>/<model_name>')"),
+         model: str = typer.Option(..., "--model", "-m", help="The name of the model to use (e.g., 'gpt-4', '<provider>/<model_name>')"),
          input_json: str = typer.Option(..., "--input", "-i", help="Either a JSON string or path to a JSON file containing test cases"),
          output_json: str = typer.Option(None, "--output", "-o", help="Path to save the results (if not provided, prints to stdout)")):
     """

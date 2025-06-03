@@ -70,14 +70,7 @@ The library also provides an interface to combine multiple judges through the `J
 ## Usage
 
 ### Pick a model
-
-- **OpenAI:** 
-  - By default, `judges` uses the OpenAI client and models due to its widespread use. To get started, you'll need an OpenAI API key set as an environment variable `OPENAI_API_KEY`
-- **LiteLLM:** 
-  - If you would like to use models on other inference providers, `judges` also integrates with `litellm` as an extra dependency. Run `pip install "judges[litellm]"`, and set the appropriate API keys based on the [LiteLLM Docs](https://docs.litellm.ai/docs/#basic-usage).
-
-> [!TIP]  
-> If you choose to use `litellm` to use 3rd-party inference providers, and the model you want is not available via the function below, check the docs of the inference provider directly since `litellm` docs may not always be up to date.
+By default, `judges` uses [`instructor`](https://python.useinstructor.com/) for structured outputs and models due to its widespread use. To get started, set your `OPENAI_API_KEY` or whatever key you want for a specific model provider. Refer to the instructor docs for more providers.
 
 
 ### Send data to an LLM
@@ -284,7 +277,7 @@ judges PollMultihopCorrectness -m gpt-4 -i test_cases.json -o results.json
 
 The CLI accepts the following parameters:
 - `judge`: The type of judge to use (see [Classifiers](#classifiers-1))
-- `--model` or `-m`: The name of the model to use (e.g., "gpt-4", "<litellm_provider>/<model_name>")
+- `--model` or `-m`: The name of the model to use (e.g., "gpt-4", "<provider>/<model_name>")
 - `--input` or `-i`: Either a JSON string or path to a JSON file containing test cases
 - `--output` or `-o` (optional): Path to save the results (if not provided, prints to stdout)
 
