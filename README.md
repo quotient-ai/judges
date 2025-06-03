@@ -126,7 +126,7 @@ from judges.classifiers.correctness import PollMultihopCorrectness
 
 # use the correctness classifier to determine if the first model
 # answered correctly
-correctness = PollMultihopCorrectness(model='gpt-4o-mini')
+correctness = PollMultihopCorrectness(model='openai/gpt-4o-mini')
 
 judgment = correctness.judge(
     input=input,
@@ -148,8 +148,8 @@ A jury of LLMs can enable more diverse results and enable you to combine the jud
 from judges import Jury
 from judges.classifiers.correctness import PollMultihopCorrectness, RAFTCorrectness
 
-poll = PollMultihopCorrectness(model='gpt-4o')
-raft = RAFTCorrectness(model='gpt-4o-mini')
+poll = PollMultihopCorrectness(model='openai/gpt-4o')
+raft = RAFTCorrectness(model='openai/gpt-4o-mini')
 
 jury = Jury(judges=[poll, raft], voting_method="average")
 
@@ -227,7 +227,7 @@ task = "Evaluate responses for accuracy, clarity, and helpfulness."
 autojudge = AutoJudge.from_dataset(
     dataset=dataset,
     task=task,
-    model="gpt-4-turbo-2024-04-09",
+    model="openai/gpt-4-turbo-2024-04-09",
     # increase workers for speed ⚡
     # max_workers=2,
     # generated prompts are automatically saved to disk
