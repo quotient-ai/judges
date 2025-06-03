@@ -130,7 +130,6 @@ class BaseJudge:
             messages=messages,
             max_tokens=None,
             temperature=0.0,
-            seed=None,
             response_model=Judgment,
         )
         return judgment.reasoning, judgment.score
