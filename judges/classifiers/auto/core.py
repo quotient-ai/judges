@@ -147,8 +147,8 @@ class AutoJudge(BaseJudge):
             completion = client.chat.completions.create(
                 messages=messages,
                 temperature=0.1,
-                seed=42,
                 max_tokens=1024,
+                response_model=None,
             )
 
             if not completion or not completion.choices:
@@ -186,12 +186,13 @@ class AutoJudge(BaseJudge):
             ]
 
             # Generate the raw rubric
-            completion = instructor.chat.completions.create(
+            client = instructor.from_provider(self.model)
+
+            completion = client.completions.create(
                 messages=messages,
-                model=self.model,
                 temperature=0,
                 max_tokens=1024,
-                seed=42,
+                response_model=None,
             )
             rubric = completion.choices[0].message.content.strip()
 
@@ -230,12 +231,12 @@ class AutoJudge(BaseJudge):
                     {"role": "system", "content": ''},
                     {"role": "user", "content": formatted_grading_note},
                 ]
-                response = instructor.chat.completions.create(
+                client = instructor.from_provider(self.model)
+
+                response = client.chat.completions.create(
                     messages=messages,
-                    model=self.model,
                     temperature=0,
                     max_tokens=1024,
-                    seed=42,
                     response_model=GradingNote,
                 )
 
