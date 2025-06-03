@@ -262,4 +262,8 @@ class Jury:
         else:
             score = self.voting_method(scores=scores, score_types=score_types)
 
+        # Round numerical scores to the nearest integer
+        if isinstance(score, float) and all(t == "numerical" for t in score_types):
+            score = round(score)
+
         return Verdict(score=score, judgments=judgments)
