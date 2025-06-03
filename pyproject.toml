@@ -4,11 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "judges"
-<<<<<<< HEAD
-version = "0.0.12"
-=======
 version = "0.1.0"
->>>>>>> bbec695 (Use instructor as the only client)
 authors = [
     {name = "Freddie Vargus", email = "freddie@quotientai.co"},
 ]
