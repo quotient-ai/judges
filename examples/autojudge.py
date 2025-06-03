@@ -37,7 +37,7 @@ task = "Evaluate responses for accuracy, clarity, and helpfulness."
 autojudge = AutoJudge.from_dataset(
     dataset=dataset,
     task=task,
-    model="gpt-4-turbo-2024-04-09",
+    model="openai/gpt-4-turbo-2024-04-09",
     # increase workers for speed ⚡
     # max_workers=2,
     # generated prompts are automatically saved to disk

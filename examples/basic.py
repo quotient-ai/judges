@@ -15,6 +15,7 @@ But instead of chasing it, Fig barked in excitement, as if saying, “Nice to me
 From that day on, Fig had a new friend. Every afternoon, the two of them would meet in the same spot, enjoying the quiet companionship of an unlikely friendship. Fig's adventurous heart had found a little peace in the simple joy of being with his new friend.
 """
 
+print("Getting input, expected, and output...")
 # set up the input prompt
 input = f'{story}\n\nQuestion:{question}'
 
@@ -35,6 +36,7 @@ output = client.chat.completions.create(
 
 
 
+print("Judging...")
 # use the correctness classifier to determine if the first model
 # answered correctly
 correctness = PollMultihopCorrectness(model='openai/gpt-4o-mini')
