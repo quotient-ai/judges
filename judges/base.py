@@ -4,7 +4,7 @@ from typing import Optional
 
 import instructor
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
@@ -27,13 +27,21 @@ class Judgment(BaseModel):
     reasoning: str
     score_type: str = "boolean"
 
-    def __post_init__(self):
-        if self.score_type == "boolean":
-            if isinstance(self.score, str):
-                if self.score.lower() in ["yes", "true", "1", "good"]:
-                    self.score = True
-                elif self.score.lower() in ["no", "false", "0", "bad"]:
-                    self.score = False
+    @field_validator('score')
+    @classmethod
+    def convert_string_to_boolean(cls, v, info):
+        """Convert string representations to boolean when score_type is boolean."""
+        # Access score_type from the validation context
+        score_type = info.data.get('score_type', 'boolean')
+
+        if score_type == "boolean" and isinstance(v, str):
+            v_lower = v.lower()
+            if v_lower in ["yes", "true", "1", "good"]:
+                return True
+            elif v_lower in ["no", "false", "0", "bad"]:
+                return False
+
+        return v
 
 
 class Verdict(BaseModel):
@@ -128,7 +136,6 @@ class BaseJudge:
 
         judgment = client.chat.completions.create(
             messages=messages,
-            max_tokens=None,
             temperature=0.0,
             response_model=Judgment,
         )
@@ -233,12 +240,12 @@ class Jury:
 
         scores = [judgment.score for judgment in judgments]
         score_types = [judgment.score_type for judgment in judgments]
-        
+
         if self.voting_method.__name__ == "weighted_average_voting":
             # For weighted average, we need to provide weights
             weights = [1.0] * len(scores)  # Default equal weights
             score = self.voting_method(scores=scores, weights=weights, score_types=score_types)
         else:
             score = self.voting_method(scores=scores, score_types=score_types)
-            
+
         return Verdict(score=score, judgments=judgments)
