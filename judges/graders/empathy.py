@@ -54,7 +54,7 @@ class EmotionQueenImplicitEmotionRecognition(BaseJudge):
         """
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
 
 
 class EmotionQueenIntentionRecognition(BaseJudge):
@@ -106,7 +106,7 @@ class EmotionQueenIntentionRecognition(BaseJudge):
         """
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
 
 
 class EmotionQueenKeyEventRecognition(BaseJudge):
@@ -161,7 +161,7 @@ class EmotionQueenKeyEventRecognition(BaseJudge):
         """
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
 
 
 class EmotionQueenMixedEventRecognition(BaseJudge):
@@ -213,4 +213,4 @@ class EmotionQueenMixedEventRecognition(BaseJudge):
         """
         )
         reasoning, score = self._judge(user_prompt=user_prompt, system_prompt=system_prompt)
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")

@@ -1,3 +1,5 @@
+import json
+
 from textwrap import dedent
 
 from judges.base import BaseJudge, Judgment
@@ -31,7 +33,7 @@ class HaystackBulletPointCoverageCorrectness(BaseJudge):
     NOTE:
     -----
     We remove the authors' initial output standardization requirement i.e., "Rating: [[rating]]" 
-    so we don't need to define a new methood to extract the rating for just this one judge.
+    so we don't need to define a new method to extract the rating for just this one judge.
     """
 
     def judge(
@@ -110,7 +112,6 @@ class HaystackBulletPointCoverageCorrectness(BaseJudge):
             Bullet Points:
             {output}
 
-
             Requirements:
             - Do not hallucinate that the insight is covered by the bullet points if it is not.
             - Your response should only be the JSON output in the format above, such that it can directly parsed by Python's json module. DO NOT OUTPUT ANY EXPLANATION OR ANYTHING THAT IS NOT THE JSON RESPONSE.
@@ -121,8 +122,11 @@ class HaystackBulletPointCoverageCorrectness(BaseJudge):
             user_prompt=user_prompt,
             system_prompt=system_prompt,
         )
+        # the score will likely be output as a JSON string
+        score = json.loads(score)
+        coverage = score['coverage']
 
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=coverage, score_type="likert")
     
 
 

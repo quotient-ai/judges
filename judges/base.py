@@ -1,12 +1,26 @@
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Annotated, Optional, Literal
 
 import instructor
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
+
+
+ScoreType = Annotated[
+    Literal["boolean", "numerical", "likert"], 
+    Field(
+        description="""
+        The type of score being used (e.g. 'boolean', 'numerical', 'likert').
+
+        Boolean scores will either be True or False.
+        Numerical scores will be 0 or greater.
+        Likert scores can be anything that uses a likert-style structure such as ["bad", "good", "excellent"]. Essentially categorical labels.
+        """
+    )
+]
 
 
 class Judgment(BaseModel):
@@ -25,7 +39,7 @@ class Judgment(BaseModel):
 
     score: bool | int | str
     reasoning: str
-    score_type: str = "boolean"
+    score_type: ScoreType = "boolean"
 
     @field_validator('score')
     @classmethod

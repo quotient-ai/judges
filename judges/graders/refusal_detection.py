@@ -89,4 +89,4 @@ class ORBenchRefusalDetection(BaseJudge):
             system_prompt=system_prompt,
         )
 
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="likert")

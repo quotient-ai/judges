@@ -80,4 +80,4 @@ class PrometheusAbsoluteCoarseCorrectness(BaseJudge):
             user_prompt=user_prompt,
             system_prompt=system_prompt,
         )
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
