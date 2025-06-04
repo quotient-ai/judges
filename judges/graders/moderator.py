@@ -91,7 +91,7 @@ class ORBenchUserInputModeration(BaseJudge):
             system_prompt=system_prompt,
         )
 
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")
     
 
 
@@ -176,4 +176,4 @@ class ORBenchUserOutputModeration(BaseJudge):
             system_prompt=system_prompt,
         )
 
-        return Judgment(reasoning=reasoning, score=score)
+        return Judgment(reasoning=reasoning, score=score, score_type="numerical")

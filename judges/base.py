@@ -1,23 +1,29 @@
-import json
-import logging
-
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional
+from typing import Annotated, Optional, Literal
+
+import instructor
+
+from pydantic import BaseModel, Field, field_validator
 
 from judges.voting_methods import AVAILABLE_VOTING_METHODS
 
-from judges._client import get_completion
 
-if TYPE_CHECKING:
-    import pydantic
+ScoreType = Annotated[
+    Literal["boolean", "numerical", "likert"], 
+    Field(
+        description="""
+        The type of score being used (e.g. 'boolean', 'numerical', 'likert').
 
-litellm_logger = logging.getLogger("LiteLLM")
-litellm_logger.disabled = True
+        Boolean scores will either be True or False.
+        Numerical scores will be 0 or greater.
+        Likert scores can be anything that uses a likert-style structure such as ["bad", "good", "excellent"]. Essentially categorical labels.
+        """
+    )
+]
 
 
-@dataclass
-class Judgment:
+class Judgment(BaseModel):
     """
     A dataclass that represents a judgment.
 
@@ -27,26 +33,32 @@ class Judgment:
         The score assigned by the judge, indicating the evaluation result.
     reasoning: str
         The reasoning provided by the judge for the assigned score.
+    score_type: str
+        The type of score being used (e.g. 'boolean', 'numerical', 'likert')
     """
 
     score: bool | int | str
     reasoning: str
+    score_type: ScoreType = "boolean"
 
-    def __post_init__(self):
-        """
-        Post-initialization to normalize score values for consistency.
-        """
-        if isinstance(self.score, str):
-            if self.score.lower() in ["yes", "true", "1", "good"]:
-                self.score = True
-            elif self.score.lower() in ["no", "false", "0", "bad"]:
-                self.score = False
-        elif isinstance(self.score, int):
-            self.score = bool(self.score)
+    @field_validator('score')
+    @classmethod
+    def convert_string_to_boolean(cls, v, info):
+        """Convert string representations to boolean when score_type is boolean."""
+        # Access score_type from the validation context
+        score_type = info.data.get('score_type', 'boolean')
+
+        if score_type == "boolean" and isinstance(v, str):
+            v_lower = v.lower()
+            if v_lower in ["yes", "true", "1", "good"]:
+                return True
+            elif v_lower in ["no", "false", "0", "bad"]:
+                return False
+
+        return v
 
 
-@dataclass
-class Verdict:
+class Verdict(BaseModel):
     """
     A dataclass that represents a jury's verdict.
 
@@ -134,19 +146,14 @@ class BaseJudge:
         """
         messages = self._build_messages(user_prompt, system_prompt)
 
-        completion = get_completion(
-            model=self.model,
+        client = instructor.from_provider(self.model)
+
+        judgment = client.chat.completions.create(
             messages=messages,
-            max_tokens=None,
-            temperature=1,
-            seed=None,
-            response_model=None,
-            response_format={"type": "json_object"}
+            temperature=0.0,
+            response_model=Judgment,
         )
-        data = json.loads(completion.choices[0].message.content)
-        reasoning = data["REASONING"]
-        score = data["SCORE"]
-        return reasoning, score
+        return judgment.reasoning, judgment.score
 
     @abstractmethod
     def judge(
@@ -246,5 +253,17 @@ class Jury:
             judgments.append(judgment)
 
         scores = [judgment.score for judgment in judgments]
-        score = self.voting_method(scores=scores)
+        score_types = [judgment.score_type for judgment in judgments]
+
+        if self.voting_method.__name__ == "weighted_average_voting":
+            # For weighted average, we need to provide weights
+            weights = [1.0] * len(scores)  # Default equal weights
+            score = self.voting_method(scores=scores, weights=weights, score_types=score_types)
+        else:
+            score = self.voting_method(scores=scores, score_types=score_types)
+
+        # Round numerical scores to the nearest integer
+        if isinstance(score, float) and all(t == "numerical" for t in score_types):
+            score = round(score)
+
         return Verdict(score=score, judgments=judgments)

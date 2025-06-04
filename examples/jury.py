@@ -14,6 +14,7 @@ But instead of chasing it, Fig barked in excitement, as if saying, “Nice to me
 From that day on, Fig had a new friend. Every afternoon, the two of them would meet in the same spot, enjoying the quiet companionship of an unlikely friendship. Fig's adventurous heart had found a little peace in the simple joy of being with his new friend.
 """
 
+print("Getting input, expected, and output...")
 # set up the input prompt
 input = f'{story}\n\nQuestion:{question}'
 
@@ -34,17 +35,28 @@ output = client.chat.completions.create(
 
 
 from judges import Jury
-from judges.classifiers.correctness import PollMultihopCorrectness, RAFTCorrectness
+from judges.classifiers.correctness import PollMultihopCorrectness, RAFTCorrectness, PollZeroShotCorrectness
 
-poll = PollMultihopCorrectness(model='gpt-4o')
-raft = RAFTCorrectness(model='gpt-4o-mini')
+poll = PollMultihopCorrectness(model='anthropic/claude-sonnet-4-20250514')
+raft = RAFTCorrectness(model='openai/gpt-4o-mini')
+poll_zeroshot = PollZeroShotCorrectness('openai/gpt-4.1')
 
-jury = Jury(judges=[poll, raft], voting_method="average")
+jury = Jury(judges=[poll, raft, poll_zeroshot], voting_method="average")
 
+print("Getting jury's verdict...")
 verdict = jury.vote(
     input=input,
     output=output,
     expected=expected,
 )
+print("Verdict:")
 print(verdict.score)
+print("--------------------------------")
+print("Individual Judgments:")
+for i, judgment in enumerate(verdict.judgments):
+    print(f"Judgment {i+1}:")
+    print(judgment.reasoning)
+    print(judgment.score)
+    print("--------------------------------")
+print("--------------------------------")
 
