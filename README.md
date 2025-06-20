@@ -1,6 +1,6 @@
 # judges ‍⚖️
 
-[![All Contributors](https://img.shields.io/github/all-contributors/quotient-ai/judges?color=ee8449&style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/github/all-contributors/quotient-ai/judges?color=CEC825&style=flat-square)](#contributors)
 
 1. [Overview](#overview)
 2. [Installation](#installation)
