@@ -1,5 +1,7 @@
 # judges ‍⚖️
 
+[![All Contributors](https://img.shields.io/github/all-contributors/quotient-ai/judges?color=ee8449&style=flat-square)](#contributors)
+
 1. [Overview](#overview)
 2. [Installation](#installation)
 3. [API](#api)
@@ -477,3 +479,14 @@ It will be saved to the output file or printed to `stdout` if no output file is 
 | grader     | Summary Evaluation             | Evaluates the quality of summaries of given source texts on multiple aspects, using a 5-point scale                                                                                                                                                                                                                                                                                                                                        | [HypoEval: Hypothesis-Guided Evaluation for Natural Language Generation](https://arxiv.org/abs/2504.07174)                                                                 | `from judges.graders.hypoeval import HypoEvalSummary`                                                                                 |
 | grader     | Story Evaluation               | Evaluates the quality of stories generated in response to given prompts on multiple aspects, using a 5-point scale                                                                                                                                                                                                                                                                                                                       | [HypoEval: Hypothesis-Guided Evaluation for Natural Language Generation](https://arxiv.org/abs/2504.07174)                                                                 | `from judges.graders.hypoeval import HypoEvalStory`                                                                                   |
 ---
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
