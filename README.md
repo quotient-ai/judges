@@ -1,6 +1,24 @@
-# judges ‍⚖️
+<h1 align="center">judges ⚖️</h1>
 
-[![All Contributors](https://img.shields.io/github/all-contributors/quotient-ai/judges?color=CEC825&style=flat-square)](#contributors)
+<p align="center"><em>Use and Create LLM-as-a-Judge Evaluators</em></p>
+
+<p align="center">
+  <a href="https://github.com/quotient-ai/judges/stargazers">
+    <img alt="Stars" src="https://img.shields.io/github/stars/quotient-ai/judges?style=flat-square&color=B8B21A&logo=github" />
+  </a>
+  <a href="https://github.com/quotient-ai/judges/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/quotient-ai/judges?style=flat-square&color=2D723C" />
+  </a>
+  <a href="https://github.com/quotient-ai/judges/issues">
+    <img alt="Contributions welcome" src="https://img.shields.io/badge/Contributions-welcome-F7693C?style=flat-square" />
+  </a>
+  <a href="https://github.com/quotient-ai/judges/commits">
+    <img alt="Last Commit" src="https://img.shields.io/github/last-commit/quotient-ai/judges?style=flat-square&color=1D91F0" />
+  </a>
+  <a href="https://github.com/quotient-ai/judges#contributors">
+    <img alt="All Contributors" src="https://img.shields.io/github/all-contributors/quotient-ai/judges?color=7D7D6C&style=flat-square" />
+  </a>
+</p>
 
 1. [Overview](#overview)
 2. [Installation](#installation)
