@@ -453,7 +453,7 @@ class RAFTCorrectness(BaseJudge):
             NO means that the student's answer does not meet all of the criteria. This is the lowest possible score you can give.
             Only respond with "YES" or "NO", do not respond with anything else."""
         )
-        user_prompt = "Question: {input} \n Teacher's Answer: {expected} \n Student's Answer: {output}"
+        user_prompt = f"Question: {input} \n Teacher's Answer: {expected} \n Student's Answer: {output}"
         reasoning, score = self._judge(
             user_prompt=user_prompt,
             system_prompt=system_prompt,
